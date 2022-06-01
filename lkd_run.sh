@@ -63,8 +63,14 @@ function docker_run {
 
 
 case $1 in
+  gdb)
+    gdb -q -x lkd_${PROJECT}_files/lkd_${PROJECT}_gdb.py
+  ;;
   kill)
     kill -SIGTERM $(pidof qemu-system-x86_64)
+  ;;
+  run)
+    ./lkd_run_qemu.sh
   ;;
   debug)
     docker_run
