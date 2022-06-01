@@ -18,7 +18,7 @@ function docker_build {
 function wipe_kernel {
   log "called $FUNCNAME" 
   ls -a | \
-    grep -v -E "^lkd_" | \
+    grep -v -E "lkd_" | \
     grep -v -E "^(.|..|linux-$COMMIT.tar.gz|.git*|.docker*)\$" | \
     xargs rm -rf
 }
