@@ -19,7 +19,10 @@ export PATH_SSHD_CONF=$(pwd)/lkd_sshd_config
 sudo true || exit 1
 
 function docker_build {
-  docker build -f lkd_Dockerfile -t lkd-$PROJECT . || exit 1
+  docker build \
+    -f lkd_Dockerfile \
+    --build-arg PROJECTA=$PROJECT \
+    -t lkd-$PROJECT . || exit 1
 }
 
 function get_sources {
@@ -46,8 +49,23 @@ function create_dotfiles {
   echo -e ".dockerignore\nlkd_vm.log\nfs/\nmm/" >> .gitignore || exit 1
 }
 
+function docker_run {
+  docker run -it \
+      --rm --cap-add=SYS_PTRACE \
+      --security-opt seccomp=unconfined \
+      -v $(pwd):/$PROJECT:Z \
+      -v $(pwd)/lkd_gdbinit:/home/dbg/.gdbinit:Z \
+      --net host \
+      --hostname "lkd-$PROJECT-container" \
+      --name lkd-$PROJECT-container \
+      lkd-$PROJECT
+}
+
 
 case $1 in
+  debug)
+    docker_run
+  ;;
   docker)
     docker_build
   ;;
