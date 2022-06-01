@@ -52,7 +52,11 @@ function create_dotfiles {
 
   # create gitignore
   cp .dockerignore .gitignore && \
-  echo -e ".dockerignore\nlkd_vm.log\nfs/\nmm/" >> .gitignore || exit 1
+  echo -e ".dockerignore\n\
+lkd_vm.log\n\
+fs/\n\
+mm/\n\
+*.pyc" >> .gitignore || exit 1
 }
 
 function print_usage {

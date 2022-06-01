@@ -19,14 +19,14 @@ export PATH_SSHD_CONF=$(pwd)/lkd_sshd_config
 export IMG=lkd_qemu_image.qcow2
 export DIR=mount-point.dir
 
-# make sure that we have sudo later so nothing times out
-sudo true || exit 1
-
 source lkd_functions.sh
 
 log "---new run---"
 
 case $1 in
+  dotfiles)
+    create_dotfiles
+  ;;
   rebuild)
     # dangerous, wipes anything but lkd_* files
     wipe_kernel
@@ -42,7 +42,7 @@ case $1 in
   ;;
   gdb)
     log "case $1" 
-    gdb -q -x lkd_examples/${PROJECT}.py
+    gdb -q -x lkd_examples/${PROJECT}/${PROJECT}.py
   ;;
   kill)
     log "case $1" 
@@ -50,7 +50,7 @@ case $1 in
   ;;
   run)
     log "case $1" 
-    ./lkd_run_qemu.sh
+    ./lkd_run_qemu.sh $2
   ;;
   debug)
     log "case $1" 
@@ -66,6 +66,7 @@ case $1 in
   ;;
   setup)
     log "case $1" 
+    sudo true || exit 1
     docker_build
     get_sources
     ./lkd_build_kernel.sh && \
