@@ -27,7 +27,7 @@ function get_sources {
   then
     log "Reusing existing sources"
   else
-    wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz && \
+    wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz
   fi
   tar xf linux-$COMMIT.tar.gz && \
   rsync -a linux-$COMMIT/ $(pwd)/  && \

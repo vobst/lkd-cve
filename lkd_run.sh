@@ -34,6 +34,7 @@ case $1 in
     ln -sf /${PROJECT}/scripts/gdb/vmlinux-gdb.py vmlinux-gdb.py
     ln -sf /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
     create_dotfiles
+  ;;
   clean-fs)
     log "case $1" 
     sudo umount $DIR && rmdir $DIR || exit 1
