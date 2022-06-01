@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 # Variables you want to change
 # name of the kernel debugging project you are working on
@@ -16,99 +16,45 @@ export LOGGING_ON=1
 
 # Variables you may not want to change
 export PATH_SSHD_CONF=$(pwd)/lkd_sshd_config
+export IMG=lkd_qemu_image.qcow2
+export DIR=mount-point.dir
 
 # make sure that we have sudo later so nothing times out
 sudo true || exit 1
 
-function log {
-  if [[ $LOGGING_ON -ne 0 ]]
-  then
-    echo "$1" | tee -a /lkd_run.log
-  else
-    echo "$1"
-  fi
-}
-
-function docker_build {
-  log("called $FUNCNAME")
-  docker build \
-    -f lkd_Dockerfile \
-    --build-arg PROJECTA=$PROJECT \
-    -t lkd-$PROJECT . || exit 1
-}
-
-function get_sources {
-  log("called $FUNCNAME")
-  wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz && \
-  tar xf linux-$COMMIT.tar.gz && \
-  rsync -a linux-$COMMIT/ $(pwd)/  && \
-  rm -rf linux-$COMMIT* || exit 1
-}
-
-function update_ssh-config {
-  log("called $FUNCNAME")
-  if [[ -z $(grep -E "^Host lkd_qemu$" ${PATH_SSH_CONF}) ]]
-  then
-    echo -en "\nHost lkd_qemu\n\tHostName localhost\n\tPort 2222\n\tUser root\n\tIdentityFile ${PATH_SSH_KEY}\n\tStrictHostKeyChecking false" >> ${PATH_SSH_CONF} || exit 1
-  fi
-}
-
-function create_dotfiles {
-  log("called $FUNCNAME")
-  # create dockerignore
-  ls -a | grep -v lkd  | grep -v -E "^(.|..)$" > .dockerignore && \
-  echo "lkd_qemu_image.qcow2" >> .dockerignore || exit 1
-
-  # create gitignore
-  cp .dockerignore .gitignore && \
-  echo -e ".dockerignore\nlkd_vm.log\nfs/\nmm/" >> .gitignore || exit 1
-}
-
-function print_usage {
-  echo "Options: gdb, kill, run, debug, docker, rootfs, setup"
-}
-
-function docker_run {
-  log("called $FUNCNAME")
-  docker run -it \
-      --rm --cap-add=SYS_PTRACE \
-      --security-opt seccomp=unconfined \
-      -v $(pwd):/$PROJECT:Z \
-      -v $(pwd)/lkd_gdbinit:/home/dbg/.gdbinit:Z \
-      --net host \
-      --hostname "lkd-$PROJECT-container" \
-      --name lkd-$PROJECT-container \
-      lkd-$PROJECT
-}
-
+source lkd_functions.sh
 
 case $1 in
+  clean-fs)
+    log "case $1" 
+    sudo umount $DIR && rmdir $DIR || exit 1
+  ;;
   gdb)
-    log("case $1")
+    log "case $1" 
     gdb -q -x lkd_${PROJECT}_files/lkd_${PROJECT}_gdb.py
   ;;
   kill)
-    log("case $1")
+    log "case $1" 
     kill -SIGTERM $(pidof qemu-system-x86_64)
   ;;
   run)
-    log("case $1")
+    log "case $1" 
     ./lkd_run_qemu.sh
   ;;
   debug)
-    log("case $1")
+    log "case $1" 
     docker_run
   ;;
   docker)
-    log("case $1")
+    log "case $1" 
     docker_build
   ;;
   rootfs)
-    log("case $1")
-    sudo ./lkd_create_root_fs.sh || exit 1
+    log "case $1" 
+    sudo -E ./lkd_create_root_fs.sh || exit 1
   ;;
   setup)
-    log("case $1")
+    log "case $1" 
     docker_build
     get_sources
     ./lkd_build_kernel.sh && \

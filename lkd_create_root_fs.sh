@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 if [ "$EUID" -ne 0 ]
 then
@@ -6,22 +6,25 @@ then
   exit 1
 fi
 
-IMG=lkd_qemu_image.qcow2
-DIR=mount-point.dir
+source lkd_functions.sh
 
+log "Creating rootfs" && \
 ROOT_PASSWD_HASH=$(openssl passwd -1 test) && \
 qemu-img create $IMG 5g && \
 mkfs.ext2 $IMG && \
 mkdir $DIR && \
 mount -o loop $IMG $DIR && \
+log "Begin bootstrapping" && \
 debootstrap --arch amd64 \
 --include=build-essential,vim,openssh-server,make,sudo \
 bullseye $DIR && \
+log "Begin fs modifications" && \
 sed -i -e "s#root:\*#root:${ROOT_PASSWD_HASH}#" $DIR/etc/shadow && \
 echo "lkd-debian-qemu" > $DIR/etc/hostname && \
 echo "127.0.0.1       lkd-debian-qemu" >> $DIR/etc/hosts && \
 echo -e "auto enp0s3\niface enp0s3 inet dhcp" >> $DIR/etc/network/interfaces && \
 mkdir $DIR/root/.ssh && \
+log "PATH_SSH is: $PATH_SSH" \
 cat $PATH_SSH > $DIR/root/.ssh/authorized_keys && \
 cp $PATH_SSHD_CONF $DIR/etc/ssh/ && \
 cp lkd_${PROJECT}_files/* $DIR/root && \

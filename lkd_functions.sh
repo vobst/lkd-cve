@@ -1,7 +1,7 @@
 function log {
   if [[ $LOGGING_ON -ne 0 ]]
   then
-    echo "$1" | tee -a /lkd_run.log
+    echo "$1" | tee -a ./lkd_run.log
   else
     echo "$1"
   fi
@@ -43,7 +43,7 @@ function create_dotfiles {
 }
 
 function print_usage {
-  log "called $FUNCNAME" 
+log "called $FUNCNAME" 
   echo "Options: gdb, kill, run, debug, docker, rootfs, setup"
 }
 
