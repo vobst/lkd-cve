@@ -1,6 +1,9 @@
 # Dockerfile for the debugging container
 FROM docker.io/archlinux
 
+ARG PROJECTA
+ENV PROJECTE=${PROJECTA}
+
 RUN pacman -Syu --noconfirm && pacman -S --noconfirm \
 	base-devel \
 	git \
@@ -16,7 +19,7 @@ RUN chmod +x lkd_docker_create_user.sh && \
 	./lkd_docker_create_user.sh && \
 	rm ./lkd_docker_create_user.sh
 
-WORKDIR /project
+WORKDIR /${PROJECTE}
 RUN chmod 777 .
 
 WORKDIR /root
@@ -28,5 +31,5 @@ USER dbg
 RUN git clone https://github.com/vobst/dotfiles.git && \
 	./dotfiles/scripts/install.sh
 
-WORKDIR /project
+WORKDIR /${PROJECTE}
 CMD ["/bin/zsh"]

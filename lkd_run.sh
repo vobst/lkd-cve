@@ -2,7 +2,7 @@
 
 # Variables you want to change
 # name of the kernel debugging project you are working on
-export PROJECT=dev
+export PROJECT=devel
 # path/to/your/ssh_key
 export PATH_SSH_KEY=/home/kali/.ssh/id_rsa
 # path/to/your/ssh_pubkey
@@ -23,6 +23,8 @@ export DIR=mount-point.dir
 sudo true || exit 1
 
 source lkd_functions.sh
+
+log "---new run---"
 
 case $1 in
   clean-fs)
