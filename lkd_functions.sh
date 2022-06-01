@@ -1,9 +1,9 @@
 function log {
   if [[ $LOGGING_ON -ne 0 ]]
   then
-    echo "$1" | tee -a ./lkd_run.log
+    echo "[ $0 ] $1" | tee -a ./lkd_log
   else
-    echo "$1"
+    echo "[ $0 ] $1"
   fi
 }
 
@@ -54,6 +54,7 @@ function create_dotfiles {
   cp .dockerignore .gitignore && \
   echo -e ".dockerignore\n\
 lkd_vm.log\n\
+lkd_log\n\
 fs/\n\
 mm/\n\
 *.pyc" >> .gitignore || exit 1
