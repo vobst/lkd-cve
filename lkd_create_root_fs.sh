@@ -24,10 +24,9 @@ echo "lkd-debian-qemu" > $DIR/etc/hostname && \
 echo "127.0.0.1       lkd-debian-qemu" >> $DIR/etc/hosts && \
 echo -e "auto enp0s3\niface enp0s3 inet dhcp" >> $DIR/etc/network/interfaces && \
 mkdir $DIR/root/.ssh && \
-log "PATH_SSH is: $PATH_SSH" \
 cat $PATH_SSH > $DIR/root/.ssh/authorized_keys && \
 cp $PATH_SSHD_CONF $DIR/etc/ssh/ && \
-cp lkd_${PROJECT}_files/* $DIR/root && \
+cp lkd_examples/$PROJECT/* $DIR/root && \
 chmod 777 $DIR/root/prepare.sh && \
 umount $DIR && \
 rmdir $DIR && chmod 777 $IMG && exit 0 || \
