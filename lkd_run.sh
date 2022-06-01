@@ -30,6 +30,7 @@ function log {
 }
 
 function docker_build {
+  log("called $FUNCNAME")
   docker build \
     -f lkd_Dockerfile \
     --build-arg PROJECTA=$PROJECT \
@@ -37,6 +38,7 @@ function docker_build {
 }
 
 function get_sources {
+  log("called $FUNCNAME")
   wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz && \
   tar xf linux-$COMMIT.tar.gz && \
   rsync -a linux-$COMMIT/ $(pwd)/  && \
@@ -44,6 +46,7 @@ function get_sources {
 }
 
 function update_ssh-config {
+  log("called $FUNCNAME")
   if [[ -z $(grep -E "^Host lkd_qemu$" ${PATH_SSH_CONF}) ]]
   then
     echo -en "\nHost lkd_qemu\n\tHostName localhost\n\tPort 2222\n\tUser root\n\tIdentityFile ${PATH_SSH_KEY}\n\tStrictHostKeyChecking false" >> ${PATH_SSH_CONF} || exit 1
@@ -51,6 +54,7 @@ function update_ssh-config {
 }
 
 function create_dotfiles {
+  log("called $FUNCNAME")
   # create dockerignore
   ls -a | grep -v lkd  | grep -v -E "^(.|..)$" > .dockerignore && \
   echo "lkd_qemu_image.qcow2" >> .dockerignore || exit 1
@@ -65,6 +69,7 @@ function print_usage {
 }
 
 function docker_run {
+  log("called $FUNCNAME")
   docker run -it \
       --rm --cap-add=SYS_PTRACE \
       --security-opt seccomp=unconfined \
@@ -79,24 +84,31 @@ function docker_run {
 
 case $1 in
   gdb)
+    log("case $1")
     gdb -q -x lkd_${PROJECT}_files/lkd_${PROJECT}_gdb.py
   ;;
   kill)
+    log("case $1")
     kill -SIGTERM $(pidof qemu-system-x86_64)
   ;;
   run)
+    log("case $1")
     ./lkd_run_qemu.sh
   ;;
   debug)
+    log("case $1")
     docker_run
   ;;
   docker)
+    log("case $1")
     docker_build
   ;;
   rootfs)
+    log("case $1")
     sudo ./lkd_create_root_fs.sh || exit 1
   ;;
   setup)
+    log("case $1")
     docker_build
     get_sources
     ./lkd_build_kernel.sh && \
