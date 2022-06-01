@@ -42,7 +42,7 @@ case $1 in
   ;;
   gdb)
     log "case $1" 
-    gdb -q -x lkd_${PROJECT}_files/lkd_${PROJECT}_gdb.py
+    gdb -q -x lkd_examples/${PROJECT}.py
   ;;
   kill)
     log "case $1" 
