@@ -63,6 +63,9 @@ function docker_run {
 
 
 case $1 in
+  kill)
+    kill -SIGTERM $(pidof qemu-system-x86_64)
+  ;;
   debug)
     docker_run
   ;;
