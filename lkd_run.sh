@@ -27,6 +27,13 @@ source lkd_functions.sh
 log "---new run---"
 
 case $1 in
+  rebuild)
+    wipe_kernel
+    get_sources
+    ./lkd_build_kernel.sh || exit 1
+    ln -sf /${PROJECT}/scripts/gdb/vmlinux-gdb.py vmlinux-gdb.py
+    ln -sf /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
+    create_dotfiles
   clean-fs)
     log "case $1" 
     sudo umount $DIR && rmdir $DIR || exit 1
@@ -62,7 +69,7 @@ case $1 in
     ./lkd_build_kernel.sh && \
     sudo ./lkd_create_root_fs.sh || exit 1
     ln -sf /${PROJECT}/scripts/gdb/vmlinux-gdb.py vmlinux-gdb.py
-    ln -s /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
+    ln -sf /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
     update_ssh-config
     create_dotfiles
   ;;

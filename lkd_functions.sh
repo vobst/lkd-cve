@@ -15,12 +15,23 @@ function docker_build {
     -t lkd-$PROJECT . || exit 1
 }
 
+function wipe_kernel {
+  log "called $FUNCNAME" 
+  ls -a | grep -v lkd  | grep -v -E "^(.|..|linux-$COMMIT.tar.gz)\$" | \
+    xargs rm -rf
+}
+
 function get_sources {
   log "called $FUNCNAME" 
-  wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz && \
+  if [[ -f linux-$COMMIT.tar.gz ]]
+  then
+    log "Reusing existing sources"
+  else
+    wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz && \
+  fi
   tar xf linux-$COMMIT.tar.gz && \
   rsync -a linux-$COMMIT/ $(pwd)/  && \
-  rm -rf linux-$COMMIT* || exit 1
+  rm -rf linux-$COMMIT/ || exit 1
 }
 
 function update_ssh-config {
