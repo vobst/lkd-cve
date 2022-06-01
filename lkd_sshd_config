@@ -1,0 +1,40 @@
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# --- Sockets
+# Valid arguments are any (the default), inet (use IPv4 only), 
+# or inet6 (use IPv6 only)
+AddressFamily any
+
+# --- Cypto
+HostKey /etc/ssh/ssh_host_rsa_key
+
+# --- Logging
+# The possible values are: QUIET, FATAL, ERROR, INFO,
+# VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3	
+LogLevel INFO
+
+
+# --- Auth ---
+PermitRootLogin prohibit-password
+
+# Check file modes and ownership of the user's files and 
+# home directory before accepting login.
+StrictModes yes
+
+MaxAuthTries 1
+
+MaxSessions 10
+
+PubkeyAuthentication yes
+
+PasswordAuthentication no
+
+AuthenticationMethods publickey
+
+AuthorizedKeysFile .ssh/authorized_keys
+
+ChallengeResponseAuthentication no
+
+# for login notifications via email
+UsePAM yes
