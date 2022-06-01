@@ -1,5 +1,6 @@
 """
 # TODO 
+> port me to the new setup
 > add gdb cli functions
 lkd_page_address
 lkd_page_data

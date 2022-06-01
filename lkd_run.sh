@@ -2,7 +2,7 @@
 
 # Variables you want to change
 # name of the kernel debugging project you are working on
-export PROJECT=devel
+export PROJECT=dirtypipe
 # path/to/your/ssh_key
 export PATH_SSH_KEY=/home/kali/.ssh/id_rsa
 # path/to/your/ssh_pubkey
@@ -21,7 +21,7 @@ export DIR=mount-point.dir
 
 source lkd_functions.sh
 
-log "---new run---"
+log "---new run $PROJECT---"
 
 case $1 in
   dotfiles)
