@@ -28,6 +28,7 @@ log "---new run---"
 
 case $1 in
   rebuild)
+    # dangerous, wipes anything but lkd_* files
     wipe_kernel
     get_sources
     ./lkd_build_kernel.sh || exit 1
