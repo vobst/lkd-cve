@@ -11,12 +11,23 @@ export PATH_SSH=/home/kali/.ssh/id_rsa.pub
 export PATH_SSH_CONF=/home/kali/.ssh/config
 # the commit you want to build
 export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+# save logs to file
+export LOGGING_ON=1
 
 # Variables you may not want to change
 export PATH_SSHD_CONF=$(pwd)/lkd_sshd_config
 
 # make sure that we have sudo later so nothing times out
 sudo true || exit 1
+
+function log {
+  if [[ $LOGGING_ON -ne 0 ]]
+  then
+    echo "$1" | tee -a /lkd_run.log
+  else
+    echo "$1"
+  fi
+}
 
 function docker_build {
   docker build \
@@ -47,6 +58,10 @@ function create_dotfiles {
   # create gitignore
   cp .dockerignore .gitignore && \
   echo -e ".dockerignore\nlkd_vm.log\nfs/\nmm/" >> .gitignore || exit 1
+}
+
+function print_usage {
+  echo "Options: gdb, kill, run, debug, docker, rootfs, setup"
 }
 
 function docker_run {
@@ -92,7 +107,7 @@ case $1 in
     create_dotfiles
   ;;
   *)
-    echo "Options: docker, rootfs, setup"
+    print_usage
   ;;
 esac
     
