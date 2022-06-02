@@ -18,6 +18,7 @@ export LOGGING_ON=1
 export PATH_SSHD_CONF=$(pwd)/lkd_sshd_config
 export IMG=lkd_qemu_image.qcow2
 export DIR=mount-point.dir
+export FILES=lkd_files
 
 source lkd_functions.sh
 

@@ -10,7 +10,7 @@ function log {
 function docker_build {
   log "called $FUNCNAME" 
   docker build \
-    -f lkd_Dockerfile \
+    -f $FILES/lkd_Dockerfile \
     --build-arg PROJECTA=$PROJECT \
     -t lkd-$PROJECT . || exit 1
 }
