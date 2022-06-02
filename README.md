@@ -2,6 +2,9 @@ This is a Linux kernel debugging setup derived from [linux-kernel-debuggig](http
 
 To get an overview of the available functionality run `lkd_run.sh` without any arguments.
 
+## Dependencies
+see [linux-kernel-debuggig](https://github.com/martinclauss/linux-kernel-debugging)
+
 ## Quick start guide: Examples
 This project contains some examples to illustrate CVEs found in the Linux kernel. To explore an example
 1. `git clone https://github.com/vobst/lkd-cve && cd lkd-cve`
