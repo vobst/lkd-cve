@@ -3,14 +3,21 @@
 # Variables you want to change
 # name of the kernel debugging project you are working on
 export PROJECT=dirtypipe
+#export PROJECT=devel
+
+# the commit you want to build
+# dirtypipe
+export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+# devel 
+#export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+
 # path/to/your/ssh_key
 export PATH_SSH_KEY=/home/kali/.ssh/id_rsa
 # path/to/your/ssh_pubkey
 export PATH_SSH=/home/kali/.ssh/id_rsa.pub
 # path/to/your/ssh_config
 export PATH_SSH_CONF=/home/kali/.ssh/config
-# the commit you want to build
-export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+
 # save logs to file
 export LOGGING_ON=1
 
