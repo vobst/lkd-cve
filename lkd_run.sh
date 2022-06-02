@@ -2,12 +2,15 @@
 
 # Variables you want to change
 # name of the kernel debugging project you are working on
-export PROJECT=dirtypipe
+#export PROJECT=dirtypipe
+export PROJECT=cve-2021-22555
 #export PROJECT=devel
 
 # the commit you want to build
 # dirtypipe
-export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+# export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+# CVE-2021-22555
+export COMMIT=d163a925ebbc6eb5b562b0f1d72c7e817aa75c40
 # devel 
 #export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
 
