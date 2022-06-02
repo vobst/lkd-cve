@@ -76,6 +76,9 @@ case $1 in
     log "case $1" 
     sudo -E ./$SCRIPTS/lkd_create_root_fs.sh || exit 1
   ;;
+  symlinks)
+    create_symlinks
+  ;;
   setup)
     log "case $1" 
     sudo true || exit 1
@@ -83,8 +86,7 @@ case $1 in
     get_sources
     ./$SCRIPTS/lkd_build_kernel.sh && \
     sudo -E ./$SCRIPTS/lkd_create_root_fs.sh || exit 1
-    ln -sf /${PROJECT}/scripts/gdb/vmlinux-gdb.py vmlinux-gdb.py
-    ln -sf /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
+    create_symlinks
     update_ssh-config
     create_dotfiles
   ;;

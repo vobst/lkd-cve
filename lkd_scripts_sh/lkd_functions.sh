@@ -7,6 +7,11 @@ function log {
   fi
 }
 
+function create_symlinks {
+  ln -sf /${PROJECT}/scripts/gdb/vmlinux-gdb.py vmlinux-gdb.py
+  ln -sf /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
+}
+
 function docker_build {
   log "called $FUNCNAME" 
   docker build \
@@ -68,7 +73,7 @@ function create_dotfiles {
 }
 
 function print_usage {
-log "called $FUNCNAME" 
+  log "called $FUNCNAME" 
   echo -e "Options: \n\
     dotfiles:    re-creates dotfiles\n\
     rebuild:     rebuilds kernel from COMMIT\n\
@@ -81,7 +86,8 @@ log "called $FUNCNAME"
     rootfs:      re-builds rootfs\n\
     copy-in:     copy args to guest\n\
     copy-out:    copy args from gust\n\
-    setup:       runs full initial setup"
+    setup:       runs full initial setup\n\
+    symlinks:    re-create symlinks to gdb scripts"
 }
 
 function docker_run {
