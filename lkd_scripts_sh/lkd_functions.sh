@@ -70,17 +70,18 @@ function create_dotfiles {
 function print_usage {
 log "called $FUNCNAME" 
   echo -e "Options: \n\
-    dotfiles\n\
-    rebuild\n\
-    gdb\n\
-    clean-fs\n\
-    gdb\n\
-    kill\n\
-    run\n\
-    debug\n\
-    docker\n\
-    rootfs\n\
-    setup"
+    dotfiles:    re-creates dotfiles\n\
+    rebuild:     rebuilds kernel from COMMIT\n\
+    gdb:         launches gdb inside container\n\
+    clean-fs:    wipes remnants of failed fs creation\n\
+    kill:        kills QEMU instance\n\
+    run [debug]: spins up QEMU instance [with gdbstub]\n\
+    debug:       spins up container\n\
+    docker:      re-builds container\n\
+    rootfs:      re-builds rootfs\n\
+    copy-in:     copy args to guest\n\
+    copy-out:    copy args from gust\n\
+    setup:       runs full initial setup"
 }
 
 function docker_run {
