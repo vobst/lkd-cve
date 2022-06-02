@@ -8,13 +8,15 @@
 #define F_SETPIPE_SZ    1031
 
 void
-pause_for_inspection(char* msg) {
+pause_for_inspection(char* msg)
+{
     puts(msg);
     getchar();
 }
 
 void
-fill_pipe(int pipefd_w) {
+fill_pipe(int pipefd_w)
+{
     for (int i = 1; i <= PAGESIZE / 8; i++) {
         if (i == 1) {
             pause_for_inspection("About to perform first write() to pipe");
@@ -29,7 +31,8 @@ fill_pipe(int pipefd_w) {
 }
 
 void
-drain_pipe(int pipefd_r) {
+drain_pipe(int pipefd_r)
+{
     char buf[8];
     for (int i = 1; i <= PAGESIZE / 8; i++) {
         if (i == PAGESIZE / 8) {
@@ -42,7 +45,8 @@ drain_pipe(int pipefd_r) {
 }
 
 void
-setup_pipe(int pipefd_r, int pipefd_w) {
+setup_pipe(int pipefd_r, int pipefd_w)
+{
     if (fcntl(pipefd_w, F_SETPIPE_SZ, PAGESIZE) != PAGESIZE) {
         exit(1);
     }
@@ -51,7 +55,8 @@ setup_pipe(int pipefd_r, int pipefd_w) {
 }
 
 void
-main() {
+main()
+{
     int pipefds[2];
     int tfd;
 

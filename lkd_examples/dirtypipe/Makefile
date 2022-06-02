@@ -7,6 +7,7 @@ poc: poc.c
 
 format:
 	astyle --options="astyle-code-format.cfg" "poc.c*"
+	${HOME}/.local/bin/black *.py
 
 clean:
 	rm -f poc

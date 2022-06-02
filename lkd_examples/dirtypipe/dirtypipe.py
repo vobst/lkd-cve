@@ -1,6 +1,6 @@
 import os
 
-sys.path.insert(0, "/"+os.environ['PROJECTE']+"/lkd_scripts_gdb")
+sys.path.insert(0, "/" + os.environ["PROJECTE"] + "/lkd_scripts_gdb")
 
 from lkd import session
 from lkd import structs
