@@ -19,6 +19,7 @@ export PATH_SSHD_CONF=$(pwd)/lkd_sshd_config
 export IMG=lkd_qemu_image.qcow2
 export DIR=mount-point.dir
 export FILES=lkd_files
+export SCRIPTS=lkd_scripts_sh
 
 source lkd_functions.sh
 
@@ -32,7 +33,7 @@ case $1 in
     # dangerous, wipes anything but lkd_* files
     wipe_kernel
     get_sources
-    ./lkd_build_kernel.sh || exit 1
+    ./$SCRIPTS/lkd_build_kernel.sh || exit 1
     ln -sf /${PROJECT}/scripts/gdb/vmlinux-gdb.py vmlinux-gdb.py
     ln -sf /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
     create_dotfiles
@@ -70,7 +71,7 @@ case $1 in
     sudo true || exit 1
     docker_build
     get_sources
-    ./lkd_build_kernel.sh && \
+    ./$SCRIPTS/lkd_build_kernel.sh && \
     sudo -E ./lkd_create_root_fs.sh || exit 1
     ln -sf /${PROJECT}/scripts/gdb/vmlinux-gdb.py vmlinux-gdb.py
     ln -sf /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
