@@ -29,6 +29,7 @@ function get_sources {
   then
     log "Reusing existing sources"
   else
+    log "Fetching sources"
     wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz
   fi
   tar xf linux-$COMMIT.tar.gz && \
@@ -40,7 +41,10 @@ function update_ssh-config {
   log "called $FUNCNAME" 
   if [[ -z $(grep -E "^Host lkd_qemu$" ${PATH_SSH_CONF}) ]]
   then
+    log "Updating ssh config"
     echo -en "\nHost lkd_qemu\n\tHostName localhost\n\tPort 2222\n\tUser root\n\tIdentityFile ${PATH_SSH_KEY}\n\tStrictHostKeyChecking false" >> ${PATH_SSH_CONF} || exit 1
+  else
+    log "ssh config is up to date"
   fi
 }
 
@@ -53,16 +57,30 @@ function create_dotfiles {
   # create gitignore
   cp .dockerignore .gitignore && \
   echo -e ".dockerignore\n\
-lkd_vm.log\n\
-lkd_log\n\
-fs/\n\
-mm/\n\
-*.pyc" >> .gitignore || exit 1
+    lkd_vm.log\n\
+    lkd_log\n\
+    fs/\n\
+    mm/\n\
+    lkd_gdb_load.py\n\
+    .gdb_history\n\
+    *.pyc" | \
+  sed -E "s/[ ]+//g" >> .gitignore || exit 1
 }
 
 function print_usage {
 log "called $FUNCNAME" 
-  echo "Options: gdb, kill, run, debug, docker, rootfs, setup"
+  echo -e "Options: \n\
+    dotfiles\n\
+    rebuild\n\
+    gdb\n\
+    clean-fs\n\
+    gdb\n\
+    kill\n\
+    run\n\
+    debug\n\
+    docker\n\
+    rootfs\n\
+    setup"
 }
 
 function docker_run {
