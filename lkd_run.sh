@@ -15,13 +15,13 @@ export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
 export LOGGING_ON=1
 
 # Variables you may not want to change
-export PATH_SSHD_CONF=$(pwd)/lkd_sshd_config
+export PATH_SSHD_CONF=$(pwd)/$FILES/lkd_sshd_config
 export IMG=lkd_qemu_image.qcow2
 export DIR=mount-point.dir
 export FILES=lkd_files
 export SCRIPTS=lkd_scripts_sh
 
-source lkd_functions.sh
+source $SCRIPTS/lkd_functions.sh
 
 log "---new run $PROJECT---"
 
@@ -52,7 +52,7 @@ case $1 in
   ;;
   run)
     log "case $1" 
-    ./lkd_run_qemu.sh $2
+    ./$SCRIPTS/lkd_run_qemu.sh $2
   ;;
   debug)
     log "case $1" 

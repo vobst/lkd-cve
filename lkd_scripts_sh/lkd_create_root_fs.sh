@@ -6,7 +6,7 @@ then
   exit 1
 fi
 
-source lkd_functions.sh
+source $SCRIPTS/lkd_functions.sh
 
 log "Creating rootfs" && \
 ROOT_PASSWD_HASH=$(openssl passwd -1 test) && \

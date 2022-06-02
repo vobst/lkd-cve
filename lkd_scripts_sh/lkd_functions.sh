@@ -89,7 +89,7 @@ function docker_run {
       --rm --cap-add=SYS_PTRACE \
       --security-opt seccomp=unconfined \
       -v $(pwd):/$PROJECT:Z \
-      -v $(pwd)/lkd_gdbinit:/home/dbg/.gdbinit:Z \
+      -v $(pwd)/$FILES/lkd_gdbinit:/home/dbg/.gdbinit:Z \
       --net host \
       --hostname "lkd-$PROJECT-container" \
       --name lkd-$PROJECT-container \

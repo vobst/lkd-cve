@@ -14,7 +14,7 @@ RUN pacman -Syu --noconfirm && pacman -S --noconfirm \
 	zsh
 
 WORKDIR /tmp
-COPY lkd_docker_create_user.sh .
+COPY lkd_scripts_sh/lkd_docker_create_user.sh .
 RUN chmod +x lkd_docker_create_user.sh && \
 	./lkd_docker_create_user.sh && \
 	rm ./lkd_docker_create_user.sh
