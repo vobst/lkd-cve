@@ -16,7 +16,7 @@ mkdir $DIR && \
 mount -o loop $IMG $DIR && \
 log "Begin bootstrapping" && \
 debootstrap --arch amd64 \
---include=build-essential,vim,openssh-server,make,sudo \
+--include=build-essential,gcc-multilib,vim,openssh-server,make,sudo \
 bullseye $DIR && \
 log "Begin fs modifications" && \
 sed -i -e "s#root:\*#root:${ROOT_PASSWD_HASH}#" $DIR/etc/shadow && \
