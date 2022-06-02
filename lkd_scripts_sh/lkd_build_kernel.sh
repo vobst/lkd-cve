@@ -10,6 +10,7 @@ make kvm_guest.config && \
     -e FRAME_POINTER \
     -e GDB_SCRIPTS \
     -e KALLSYMS \
+    -d DEBUG_INFO_BTF \
     -d DEBUG_INFO_DWARF5 \
     -d DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT \
     -d DEBUG_INFO_REDUCED \
