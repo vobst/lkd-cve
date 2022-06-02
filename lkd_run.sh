@@ -64,7 +64,7 @@ case $1 in
   ;;
   rootfs)
     log "case $1" 
-    sudo -E ./lkd_create_root_fs.sh || exit 1
+    sudo -E ./$SCRIPTS/lkd_create_root_fs.sh || exit 1
   ;;
   setup)
     log "case $1" 
@@ -72,7 +72,7 @@ case $1 in
     docker_build
     get_sources
     ./$SCRIPTS/lkd_build_kernel.sh && \
-    sudo -E ./lkd_create_root_fs.sh || exit 1
+    sudo -E ./$SCRIPTS/lkd_create_root_fs.sh || exit 1
     ln -sf /${PROJECT}/scripts/gdb/vmlinux-gdb.py vmlinux-gdb.py
     ln -sf /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
     update_ssh-config
