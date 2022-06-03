@@ -26,8 +26,6 @@ echo -e "auto enp0s3\niface enp0s3 inet dhcp" >> $DIR/etc/network/interfaces && 
 mkdir $DIR/root/.ssh && \
 cat $PATH_SSH > $DIR/root/.ssh/authorized_keys && \
 cp $PATH_SSHD_CONF $DIR/etc/ssh/ && \
-cp lkd_examples/$PROJECT/* $DIR/root && \
-chmod 777 $DIR/root/prepare.sh && \
 log "Begin teardown" && \
 umount $DIR && \
 rmdir $DIR && chmod 777 $IMG && exit 0 || \

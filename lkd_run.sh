@@ -29,6 +29,7 @@ export IMG=lkd_qemu_image.qcow2
 export DIR=mount-point.dir
 export FILES=lkd_files
 export SCRIPTS=lkd_scripts_sh
+export EXAMPLES=lkd_examples
 export PATH_SSHD_CONF=$(pwd)/$FILES/lkd_sshd_config
 
 source $SCRIPTS/lkd_functions.sh
@@ -36,6 +37,9 @@ source $SCRIPTS/lkd_functions.sh
 log "---new run $PROJECT---"
 
 case $1 in
+  copy-in)
+    scp $EXAMPLES/$PROJECT/* lkd_qemu:/root
+  ;;
   dotfiles)
     create_dotfiles
   ;;
