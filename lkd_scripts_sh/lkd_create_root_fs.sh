@@ -16,9 +16,10 @@ mkdir $DIR && \
 mount -o loop $IMG $DIR && \
 log "Begin bootstrapping" && \
 debootstrap --arch amd64 \
---include=build-essential,gcc-multilib,vim,openssh-server,make,sudo,nftables \
+--include=build-essential,gcc-multilib,vim,openssh-server,make,sudo,nftables,iptables \
 bullseye $DIR && \
 log "Begin fs modifications" && \
+INSTALL_MOD_PATH=$(pwd)/$DIR make modules_install && \
 sed -i -e "s#root:\*#root:${ROOT_PASSWD_HASH}#" $DIR/etc/shadow && \
 echo "lkd-debian-qemu" > $DIR/etc/hostname && \
 echo "127.0.0.1       lkd-debian-qemu" >> $DIR/etc/hosts && \
