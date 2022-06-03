@@ -14,8 +14,13 @@ class GenericStruct:
 
     def __init__(self, address):
         """
-        @param  gdb.Value   address     pointer to struct
+        @param  undef       address     pointer to struct
         """
+        try:
+            address.type
+        except:
+            address = gdb.Value(address)
+
         if str(address.type) != str(self.ptype):
             address = address.cast(self.ptype)
         self.address = address
@@ -90,6 +95,7 @@ class PipeBuffer(GenericStruct):
         "PIPE_BUF_FLAG_WHOLE": 0x20,
     }
 
+    # TODO move to parent
     def sym_flags(self):
         tmp = []
         for key, value in self.flags.items():
@@ -181,5 +187,30 @@ class Page(GenericStruct):
                 .tobytes()
             )
         )
+
+
+class KmemCache(GenericStruct):
+    stype = gdb.lookup_type('struct kmem_cache')
+    ptype = stype.pointer()
+    list_offset = [f.bitpos // 8 for f in stype.fields() if f.name == "list"][0]
+    flags = None
+
+    @classmethod
+    def from_list(cls, lst):
+        '''
+        Info: Constructor from &cache->list
+        '''
+        return cls(int(lst) - cls.list_offset)
+
+    def nxt(self):
+        pass
+
+    def prev(self):
+        pass
+
+    def _print_info(self):
+        self.print_member('name')
+        self.print_member('size')
+        self.print_member('object_size')
 
 
