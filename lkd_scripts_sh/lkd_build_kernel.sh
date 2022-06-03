@@ -5,6 +5,7 @@ make x86_64_defconfig && \
 make kvm_guest.config && \
 ./scripts/config \
     -e CONFIG_USER_NS \
+    -m CONFIG_NF_TABLES \
     -e DEBUG_KERNEL \
     -e DEBUG_INFO \
     -e DEBUG_INFO_DWARF4 \
