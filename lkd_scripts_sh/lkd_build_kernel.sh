@@ -4,6 +4,7 @@ make mrproper && \
 make x86_64_defconfig && \
 make kvm_guest.config && \
 ./scripts/config \
+    -e CONFIG_USER_NS \
     -e DEBUG_KERNEL \
     -e DEBUG_INFO \
     -e DEBUG_INFO_DWARF4 \
