@@ -37,14 +37,17 @@ source $SCRIPTS/lkd_functions.sh
 log "---new run $PROJECT---"
 
 case $1 in
-  copy-in)
-    scp $EXAMPLES/$PROJECT/* lkd_qemu:/root
+  cp-in)
+    log "case $1" 
+    scp -q $EXAMPLES/$PROJECT/* lkd_qemu:/root
   ;;
   dotfiles)
+    log "case $1" 
     create_dotfiles
   ;;
   rebuild)
-    # dangerous, wipes anything but lkd_* files
+    log "case $1" 
+    log "Hope you pushed your progress..." 
     wipe_kernel
     get_sources
     ./$SCRIPTS/lkd_build_kernel.sh || exit 1
