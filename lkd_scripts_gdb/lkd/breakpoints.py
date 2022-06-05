@@ -11,7 +11,7 @@ class GenericContextBP(gdb.Breakpoint):
         @attr   String      _comm       'comm' member of 'struct
                                         task_struct' of process in whose
                                         context we want to stop
-        @attr   String      _condition  expression that determines if 
+        @attr   String      _condition  expression that determines if
                                         breakpoint is activated
         """
         super().__init__(*args)
