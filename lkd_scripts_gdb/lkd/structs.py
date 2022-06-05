@@ -152,27 +152,34 @@ class Page(GenericStruct):
     ptype = stype.pointer()
     pagesize = 4096
     page_shift = 12
+    vmemmap_base = int(gdb.parse_and_eval("vmemmap_base"))
+    page_offset_base = int(gdb.parse_and_eval("page_offset_base"))
 
     def __init__(self, address):
         """
-        @attr   gdb.Value   virtual     virtual address of cached data
+        @attr   gdb.Value   virtual     virtual address of data
         """
         super().__init__(address)
         self.virtual = self.page_address(self.address)
 
-    @staticmethod
-    def page_address(page):
+    @classmethod
+    def from_virtual(cls, virtual):
+        '''
+        Info: Constructs a Page from any  virtual address within it.
+        '''
+        pfn = (virtual - cls.page_offset_base) >> cls.page_shift
+        return Page(vmemap_base + int(cls.stype.sizeof) * pfn)
+
+    @classmethod
+    def page_address(cls, page):
         """
         Info: Calculates the virtual address of a page
-        @param  gdb.Value   page        'struct page *'
+        @param  undefined   page        'struct page *'
         """
-
-        vmemmap_base = int(gdb.parse_and_eval("vmemmap_base"))
-        page_offset_base = int(gdb.parse_and_eval("page_offset_base"))
         page = int(page)
         return (
-            int((page - vmemmap_base) / Page.stype.sizeof) << Page.page_shift
-        ) + page_offset_base
+            int((page - cls.vmemmap_base) / cls.stype.sizeof) << cls.page_shift
+        ) + cls.page_offset_base
 
     def _print_info(self):
         # TODO add print_misc to parent
