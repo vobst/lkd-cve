@@ -147,6 +147,29 @@ class XArray(GenericStruct):
         pass
 
 
+class Folio(GenericStruct):
+    stype = gdb.lookup_type("struct folio")
+    ptype = stype.pointer()
+
+    @classmethod
+    def from_page(cls, page):
+        '''
+        Info: Converts from Page to Folio.
+        '''
+        head = int(page.get_member('compound_head'))
+        if  head & 1:
+            return cls(head - 1)
+        else:
+            return cls(page.address)
+
+    @property
+    def order(self):
+        '''
+        Info: A folio contains 2^order pages.
+        '''
+        return int(self.get_member('page')['compound_order'])
+
+
 class Page(GenericStruct):
     stype = gdb.lookup_type("struct page")
     ptype = stype.pointer()
@@ -168,7 +191,7 @@ class Page(GenericStruct):
         Info: Constructs a Page from any  virtual address within it.
         '''
         pfn = (virtual - cls.page_offset_base) >> cls.page_shift
-        return Page(vmemap_base + int(cls.stype.sizeof) * pfn)
+        return cls(vmemap_base + int(cls.stype.sizeof) * pfn)
 
     @classmethod
     def page_address(cls, page):
