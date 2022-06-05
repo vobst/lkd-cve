@@ -186,48 +186,10 @@ class Slab(GenericStruct):
 
     def _print_info(self):
         host = KmemCache(self.get_member('slab_cache'))
-        host.print_info()
+        folio = Folio.from_slab(self)
         self.print_member('freelist')
-
-
-class Folio(GenericStruct):
-    # TODO list with pages of folio
-    try:
-        stype = gdb.lookup_type("struct folio")
-    except:
-        # Problem: Pre 5.14 kernels have no folios. They use compound
-        #   pages instead. https://lwn.net/Articles/849538/
-        stype = gdb.lookup_type("struct page")
-    ptype = stype.pointer()
-
-    @classmethod
-    def from_page(cls, page):
-        '''
-        Info: Constuct Folio from any Page within it.
-        @param  Page        page        Page instance we want to get the 
-                                        folio of.
-        '''
-        head = int(page.get_member('compound_head'))
-        if  head & 1:
-            return cls(head - 1)
-        else:
-            return cls(page.address)
-
-    @classmethod
-    def from_virtual(cls, virtual):
-        '''
-        Info: Constructs a folio from any virtual address within it.
-        '''
-        page = Page.from_virtual(virtual)
-        return cls.from_page(page)
-
-    @property
-    def order(self):
-        '''
-        Info: A folio contains 2^order pages. This info is stored on the
-              first tail page.
-        '''
-        return int(self.address[1].cast(Page.stype)['compound_order'])
+        folio._print_info()
+        host._print_info()
 
 
 class Page(GenericStruct):
@@ -237,6 +199,7 @@ class Page(GenericStruct):
     page_shift = 12
     vmemmap_base = int(gdb.parse_and_eval("vmemmap_base"))
     page_offset_base = int(gdb.parse_and_eval("page_offset_base"))
+    flags = {'PG_HEAD': (1<<16)}
 
     def __init__(self, address):
         """
@@ -277,6 +240,61 @@ class Page(GenericStruct):
                 .tobytes()
             )
         )
+
+
+class Folio(GenericStruct):
+    # TODO list with pages of folio
+    try:
+        stype = gdb.lookup_type("struct folio")
+    except:
+        # Problem: Pre 5.14 kernels have no folios. They use compound
+        #   pages instead. https://lwn.net/Articles/849538/
+        stype = gdb.lookup_type("struct page")
+    ptype = stype.pointer()
+    flags = Page.flags
+
+    @classmethod
+    def from_slab(cls, slab):
+        '''
+        Info: Converts Slab to Folio.
+        @param  Slab        slab        Slab we want to convert to folio.
+        '''
+        return cls(slab.address)
+
+    @classmethod
+    def from_page(cls, page):
+        '''
+        Info: Constuct Folio from any Page within it.
+        @param  Page        page        Page instance we want to get the 
+                                        folio of.
+        '''
+        head = int(page.get_member('compound_head'))
+        if  head & 1:
+            return cls(head - 1)
+        else:
+            return cls(page.address)
+
+    @classmethod
+    def from_virtual(cls, virtual):
+        '''
+        Info: Constructs a folio from any virtual address within it.
+        '''
+        page = Page.from_virtual(virtual)
+        return cls.from_page(page)
+
+    @property
+    def order(self):
+        '''
+        Info: A folio contains 2^order pages. This info is stored on the
+              first tail page.
+        '''
+        if int(self.get_member('flags')) & self.flags.get('PG_HEAD'):
+            return int(self.address[1].cast(Page.stype)['compound_order'])
+        else:
+            return 0
+
+    def _print_info(self):
+        print("> 'order': " + hex(self.order))
 
 
 class KmemCache(GenericStruct):
