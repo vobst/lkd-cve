@@ -148,7 +148,13 @@ class XArray(GenericStruct):
 
 
 class Slab(GenericStruct):
-    stype = gdb.lookup_type("struct slab")
+    try:
+        stype = gdb.lookup_type("struct slab")
+    except:
+        # Problem: Pre 5.17 kernels have no 'struct slab' and handle it 
+        #   as a 'stuct page' union member instead.
+        #   https://lwn.net/Articles/881039/
+        stype = gdb.lookup_type("struct page")
     ptype = stype.pointer()
 
     @classmethod
@@ -186,7 +192,12 @@ class Slab(GenericStruct):
 
 class Folio(GenericStruct):
     # TODO list with pages of folio
-    stype = gdb.lookup_type("struct folio")
+    try:
+        stype = gdb.lookup_type("struct folio")
+    except:
+        # Problem: Pre 5.14 kernels have no folios. They use compound
+        #   pages instead. https://lwn.net/Articles/849538/
+        stype = gdb.lookup_type("struct page")
     ptype = stype.pointer()
 
     @classmethod
@@ -213,9 +224,10 @@ class Folio(GenericStruct):
     @property
     def order(self):
         '''
-        Info: A folio contains 2^order pages.
+        Info: A folio contains 2^order pages. This info is stored on the
+              first tail page.
         '''
-        return int(self.get_member('page')['compound_order'])
+        return int(self.address[1].cast(Page.stype)['compound_order'])
 
 
 class Page(GenericStruct):
@@ -238,8 +250,8 @@ class Page(GenericStruct):
         '''
         Info: Constructs a Page from any  virtual address within it.
         '''
-        pfn = (virtual - cls.page_offset_base) >> cls.page_shift
-        return cls(vmemap_base + int(cls.stype.sizeof) * pfn)
+        pfn = (int(virtual) - cls.page_offset_base) >> cls.page_shift
+        return cls(cls.vmemmap_base + int(cls.stype.sizeof) * pfn)
 
     @classmethod
     def page_address(cls, page):
