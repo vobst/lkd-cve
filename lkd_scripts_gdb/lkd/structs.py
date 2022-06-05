@@ -147,20 +147,68 @@ class XArray(GenericStruct):
         pass
 
 
+class Slab(GenericStruct):
+    stype = gdb.lookup_type("struct slab")
+    ptype = stype.pointer()
+
+    @classmethod
+    def from_folio(cls, folio):
+        '''
+        Info: Converts a Folio to Slab.
+        @param  Folio       folio       Folio we want to convert to Slab.
+        '''
+        return cls(folio.address)
+
+    @classmethod
+    def from_page(cls, page):
+        '''
+        Info: Constructs a Slab from any Page within it.
+        @param  Page        page        Page we want to know Slab of.
+        '''
+        folio = Folio.from_page(page)
+        return cls.from_folio(folio)
+
+    @classmethod
+    def from_virtual(cls, virtual):
+        '''
+        Info: Constructs a Slab from any virtual address within it.
+        @param              virtual     Any virtual address within slab. 
+                                        E.g. whats returned by kmalloc.
+        '''
+        page = Page.from_virtual(virtual)
+        return cls.from_page(page)
+
+    def _print_info(self):
+        host = KmemCache(self.get_member('slab_cache'))
+        host.print_info()
+        self.print_member('freelist')
+
+
 class Folio(GenericStruct):
+    # TODO list with pages of folio
     stype = gdb.lookup_type("struct folio")
     ptype = stype.pointer()
 
     @classmethod
     def from_page(cls, page):
         '''
-        Info: Converts from Page to Folio.
+        Info: Constuct Folio from any Page within it.
+        @param  Page        page        Page instance we want to get the 
+                                        folio of.
         '''
         head = int(page.get_member('compound_head'))
         if  head & 1:
             return cls(head - 1)
         else:
             return cls(page.address)
+
+    @classmethod
+    def from_virtual(cls, virtual):
+        '''
+        Info: Constructs a folio from any virtual address within it.
+        '''
+        page = Page.from_virtual(virtual)
+        return cls.from_page(page)
 
     @property
     def order(self):
