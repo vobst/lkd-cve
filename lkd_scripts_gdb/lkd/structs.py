@@ -1,5 +1,6 @@
 import gdb
 
+from lkd import commands
 
 class GenericStruct:
     """
@@ -206,9 +207,13 @@ class Slab(GenericStruct):
     def _print_info(self):
         host = KmemCache(self.get_member("slab_cache"))
         folio = Folio.from_slab(self)
-        self.print_member("freelist")
-        folio._print_info()
+
         host._print_info()
+        folio._print_info()
+        self.print_member("freelist")
+
+
+commands.PrintStructCMD(Slab)
 
 
 class Page(GenericStruct):
