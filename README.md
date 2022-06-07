@@ -3,7 +3,7 @@ This is a Linux kernel debugging setup derived from [linux-kernel-debuggig](http
 To get an overview of the available functionality run `lkd_run.sh` without any arguments.
 
 ## Dependencies
-See [linux-kernel-debuggig](https://github.com/martinclauss/linux-kernel-debugging](https://github.com/martinclauss/linux-kernel-debugging#requirements) for a list of dependencies.
+See [linux-kernel-debuggig](https://github.com/martinclauss/linux-kernel-debugging#requirements) for a list of dependencies.
 
 ## Quick start guide: Examples
 This project contains some examples to kickstart exploration of some CVEs found in the Linux kernel. To explore an example:
