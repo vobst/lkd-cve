@@ -1,5 +1,10 @@
 import gdb
 
+import os
+import argparse
+
+from lkd import memory
+
 class PrintStructCMD(gdb.Command):
     '''
     Info: Generic way to make struct.print_info() available on the
@@ -50,3 +55,21 @@ class PrintStructCMD(gdb.Command):
         return getattr(self.struct, alt)(int(arg, 16))
 
 
+class SearchCMD(gdb.Command):
+    def __init__(self):
+        super().__init__("lkd_search" , gdb.COMMAND_USER, gdb.COMPLETE_EXPRESSION, prefix)
+        self.init = False
+
+    def lazy_init(self)
+        proc = os.popen("pgrep qemu-system")
+        pid = int(proc.read().strip(), 10)
+        proc.close()
+        phys_mem = memory.VMPhysMem(pid)
+        self.mem_searcher = memory.PhysMemSearcher(phys_mem=phys_mem)
+
+        self.parser = argparse.ArgumentParser()
+        self.parser.add_argument("area", choices=["all", "heap", "cache", "slab", "page", "page-cache", "range"])
+        self.parser.add_argument("-b", "--bytes", type=lambda s: bytes.fromhex(s))
+        self.parser.add_argument("-a", "--address", type=lambda s: int(s, 16))
+
+        self.init = True
