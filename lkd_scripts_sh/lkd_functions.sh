@@ -85,7 +85,7 @@ function print_usage {
     docker:      re-builds container\n\
     rootfs:      re-builds rootfs\n\
     copy-in:     copy args to guest\n\
-    copy-out:    copy args from gust\n\
+    copy-out:    copy args from guest\n\
     setup:       runs full initial setup\n\
     symlinks:    re-create symlinks to gdb scripts"
 }
@@ -98,6 +98,7 @@ function docker_run {
       -v $(pwd):/$PROJECT:Z \
       -v $(pwd)/$FILES/lkd_gdbinit:/home/dbg/.gdbinit:Z \
       --net host \
+      --pid host \
       --hostname "lkd-$PROJECT-container" \
       --name lkd-$PROJECT-container \
       lkd-$PROJECT
