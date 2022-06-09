@@ -22,6 +22,8 @@ except:
     gdb.write("NOTE: gdb 7.2 or later required for Linux helper scripts to "
               "work.\n")
 else:
+    import lkd.breakpoints
+    import lkd.commands
+    import lkd.memory
     import lkd.session
     import lkd.structs
-    import lkd.breakpoints
