@@ -4,6 +4,7 @@ import os
 import argparse
 
 from lkd import memory
+from lkd import structs
 
 class PrintStructCMD(gdb.Command):
     '''
@@ -61,15 +62,57 @@ class SearchCMD(gdb.Command):
         self.init = False
 
     def lazy_init(self)
-        proc = os.popen("pgrep qemu-system")
-        pid = int(proc.read().strip(), 10)
-        proc.close()
+        with os.popen("pgrep qemu-system") as proc:
+            pid = int(proc.read().strip(), 10)
         phys_mem = memory.VMPhysMem(pid)
-        self.mem_searcher = memory.PhysMemSearcher(phys_mem=phys_mem)
+        self.search_backend = memory.PhysMemSearcher(phys_mem=phys_mem)
 
         self.parser = argparse.ArgumentParser()
-        self.parser.add_argument("area", choices=["all", "heap", "cache", "slab", "page", "page-cache", "range"])
-        self.parser.add_argument("-b", "--bytes", type=lambda s: bytes.fromhex(s))
-        self.parser.add_argument("-a", "--address", type=lambda s: int(s, 16))
+        self.parser.add_argument("area", choices=["all", "heap", "cache", "slab", "folio", "page-cache", "range"], help="Memory area to search.")
+
+
+        pattern_group = self.parser.add_mutually_exclusive_group(required=True)
+        pattern_group.add_argument("-s", "--string", type=lambda s: s.encode("ASCII"))
+        pattern_group.add_argument("-b", "--bytes", type=lambda s: bytes.fromhex(s))
+
+        self.parser.add_argument("-a", "--address", type=lambda s: int(s, 16), help="Virtual address (in hex) in search area.")
 
         self.init = True
+
+    def invoke(self, argument, from_tty):
+        if not self.init:
+            self.lazy_init()
+
+        argv = gdb.string_to_argv(argument)
+        argv = self.parser.parse_args(argv)
+
+        for pattern in {argv.string, argv.bytes}:
+            if pattern:
+                self.search_backend.pattern = pattern
+
+        if argv.area in {"slab"}:
+            getattr(self, "search_" + argv.area)(argv.address)
+        else:
+            raise NotImplementedError("TODO: Extend search command.")
+
+    def search_slab(self, address):
+        slab = structs.Slab.from_virtual(address)
+        start = structs.Page.page_to_phys(slab.address)
+        length = structs.Page.pagesize * pow(2, slab.order)
+        self.search_backend.ranges = [(start, length)]
+        self.do_search()
+
+    def do_search(self):
+        self.search_backend.search()
+        self.print_search_results()
+
+    def print_search_results(self):
+        for m in self.search_backend.matches:
+            print(structs.Page.phys_to_virt(m))
+
+SearchCMD()
+
+
+
+            
+
