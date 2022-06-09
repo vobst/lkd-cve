@@ -55,17 +55,15 @@ class PhysMemSearcher():
     @attr   List        matches         List of guest physical addresses
                                         where a match was found.
     '''
-    def __init__(self, ranges=None, pattern=None, phys_mem=None)
+    def __init__(self, ranges=[], pattern=b'', phys_mem=None)
         '''
         @param  List        ranges          List of touples (address, len)
                                             that defines the search area.
         @param  Bytes       pattern         The byte pattern to search.
         @param  VMPhysMem   phys_mem        The guests physical memory.
         '''
-        if ranges:
-            self.ranges = ranges
-        if pattern:
-            self.pattern = pattern
+        self.ranges = ranges
+        self.pattern = pattern
         if phys_mem:
             self.phys_mem = phys_mem
         self.matches = []
