@@ -93,8 +93,8 @@ function print_usage {
 function docker_run {
   log "called $FUNCNAME" 
   docker run -it \
-      --rm --cap-add=SYS_PTRACE \
-      --security-opt seccomp=unconfined \
+      --rm \
+      --privileged \
       -v $(pwd):/$PROJECT:Z \
       -v $(pwd)/$FILES/lkd_gdbinit:/home/dbg/.gdbinit:Z \
       --net host \
