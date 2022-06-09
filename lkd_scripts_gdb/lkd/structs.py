@@ -198,11 +198,16 @@ class Slab(GenericStruct):
     def from_virtual(cls, virtual):
         """
         Info: Constructs a Slab from any virtual address within it.
-        @param              virtual     Any virtual address within slab.
-                                        E.g. whats returned by kmalloc.
+        @param              virtual     Any virtual address within slab
+                                        e.g., whats returned by kmalloc.
         """
         page = Page.from_virtual(virtual)
         return cls.from_page(page)
+
+    @property
+    def order(self):
+        folio = Folio.from_slab(self)
+        return folio.order
 
     def _print_info(self):
         host = KmemCache(self.get_member("slab_cache"))
@@ -243,15 +248,31 @@ class Page(GenericStruct):
         return cls(cls.vmemmap_base + int(cls.stype.sizeof) * pfn)
 
     @classmethod
+    def page_to_phys(cls, page):
+        """
+        Info: Calculates the physical address of a page.
+        @param  undefined   page        Must become a 'struct page *' by a
+                                        call to int().
+        @return Int                     Physical address of page.
+        """
+        page = int(page)
+        return int((page - cls.vmemmap_base) / cls.stype.sizeof) << cls.page_shift
+
+    @classmethod
+    def phys_to_virt(cls, address):
+        '''
+        Info: Calculates the virtual address to a physical address.
+        '''
+        return address + cls.page_offset_base
+
+    @classmethod
     def page_address(cls, page):
         """
-        Info: Calculates the virtual address of a page
+        Info: Calculates the virtual address of a page.
         @param  undefined   page        'struct page *'
         """
         page = int(page)
-        return (
-            int((page - cls.vmemmap_base) / cls.stype.sizeof) << cls.page_shift
-        ) + cls.page_offset_base
+        return cls.phys_to_virt(cls.page_to_phys(page))
 
     def read(self, offset, length):
         return (
