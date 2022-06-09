@@ -55,7 +55,7 @@ class PhysMemSearcher():
     @attr   List        matches         List of guest physical addresses
                                         where a match was found.
     '''
-    def __init__(self, ranges=[], pattern=b'', phys_mem=None)
+    def __init__(self, ranges=[], pattern=b'', phys_mem=None):
         '''
         @param  List        ranges          List of touples (address, len)
                                             that defines the search area.
