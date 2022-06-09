@@ -57,11 +57,11 @@ class PrintStructCMD(gdb.Command):
 
 
 class SearchCMD(gdb.Command):
-    def __init__(self):
+    def __init__(self, prefix=False):
         super().__init__("lkd_search" , gdb.COMMAND_USER, gdb.COMPLETE_EXPRESSION, prefix)
         self.init = False
 
-    def lazy_init(self)
+    def lazy_init(self):
         with os.popen("pgrep qemu-system") as proc:
             pid = int(proc.read().strip(), 10)
         phys_mem = memory.VMPhysMem(pid)
@@ -95,20 +95,24 @@ class SearchCMD(gdb.Command):
         else:
             raise NotImplementedError("TODO: Extend search command.")
 
+        self.do_search()
+        self.print_search_results()
+
+    '''
+    Info: Functions that initilize the ranges in the backend.
+    '''
     def search_slab(self, address):
         slab = structs.Slab.from_virtual(address)
         start = structs.Page.page_to_phys(slab.address)
         length = structs.Page.pagesize * pow(2, slab.order)
         self.search_backend.ranges = [(start, length)]
-        self.do_search()
 
     def do_search(self):
         self.search_backend.search()
-        self.print_search_results()
 
     def print_search_results(self):
         for m in self.search_backend.matches:
-            print(structs.Page.phys_to_virt(m))
+            print(hex(structs.Page.phys_to_virt(m)))
 
 SearchCMD()
 
