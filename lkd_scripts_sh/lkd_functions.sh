@@ -30,11 +30,33 @@ function wipe_kernel {
 
 function get_sources {
   log "called $FUNCNAME" 
+  get_kernel_sources
+  if [[ $# -eq 1 || $1 == "syzkaller" ]]
+  then
+    get_go_sources
+    get_syzkaller_sources
+  fi
+}
+
+function get_go_sources {
+  log "called $FUNCNAME" 
+  if [[ -f go${GOVERSION}.linux-amd64.tar.gz ]]
+  then
+    log "Reusing existing go toolchain"
+  else
+    log "Fetching new go toolchain"
+    wget https://dl.google.com/go/go${GOVERSION}.linux-amd64.tar.gz
+  fi
+  tar xf go${GOVERSION}.linux-amd64.tar.gz || exit 1
+}
+
+function get_kernel_sources {
+  log "called $FUNCNAME" 
   if [[ -f linux-$COMMIT.tar.gz ]]
   then
-    log "Reusing existing sources"
+    log "Reusing existing kernel sources"
   else
-    log "Fetching sources"
+    log "Fetching new kernel sources"
     wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz
   fi
   tar xf linux-$COMMIT.tar.gz && \

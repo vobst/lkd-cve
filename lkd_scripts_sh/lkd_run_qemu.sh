@@ -4,7 +4,7 @@ set -e
 
 if [[ $# -eq 1 && $1 == "debug" ]]
 then
-    DEBUG="-gdb tcp::1234";
+  DEBUG="-gdb tcp::1234";
 else
     DEBUG=""
 fi

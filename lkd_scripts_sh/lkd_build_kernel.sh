@@ -8,6 +8,12 @@ if [[ -f $EXAMPLES/$PROJECT/.config ]]
 then
   log "Using costum .config for $PROJECT"
   cp $EXAMPLES/$PROJECT/.config .
+  if [[ $# -eq 1 && $1 == "syzkaller" ]]
+  then
+    log "Building a kernel for syzkaller"
+    make kvmconfig && \
+    cat .config $FILES/config_syzkaller > .config || exit 1
+  fi
 else
   log "Using generic .config"
   make x86_64_defconfig && \
