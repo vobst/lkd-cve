@@ -11,8 +11,8 @@ then
   if [[ $# -eq 1 && $1 == "syzkaller" ]]
   then
     log "Building a kernel for syzkaller"
-    make kvmconfig && \
-    cat .config $FILES/config_syzkaller > .config || exit 1
+    make kvm_guest.config && \
+    cat $FILES/config_syzkaller >> .config || exit 1
   fi
 else
   log "Using generic .config"
