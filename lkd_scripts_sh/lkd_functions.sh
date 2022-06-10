@@ -111,6 +111,7 @@ function create_dotfiles {
     mm/\n\
     lkd_gdb_load.py\n\
     .gdb_history\n\
+    go/\n\
     *.pyc" | \
   sed -E "s/[ ]+//g" >> .gitignore || exit 1
 }
