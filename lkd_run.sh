@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+set -ex
+
 # Variables you want to change
 # name of the kernel debugging project you are working on
 #export PROJECT=dirtypipe
@@ -31,9 +33,16 @@ export FILES=lkd_files
 export SCRIPTS=lkd_scripts_sh
 export EXAMPLES=lkd_examples
 export PATH_SSHD_CONF=$(pwd)/$FILES/lkd_sshd_config
+
 export GOVERSION="1.18.3"
 export GOROOT=$(pwd)/go
-export PATH=$GOROOT/bin:$PATH
+export PATH="${PATH}:${GOROOT}/bin"
+
+export KERNEL=$(pwd)
+
+export SYZKALLER="$(pwd)/syzkaller"
+export SYZKALLER_MAKE_CMD="HOSTOS=linux HOSTARCH=amd64 TARGETOS=linux TARGETVMARCH=amd64 TARGETARCH=386"
+export PATH="${PATH}:${SYZKALLER}/bin"
 
 source $SCRIPTS/lkd_functions.sh
 
@@ -51,12 +60,14 @@ case $1 in
   rebuild)
     log "case $1" 
     log "Hope you pushed your progress..." 
-    wipe_kernel
-    get_sources
+    wipe_all_but_lkd
+    get_sources $2
     ./$SCRIPTS/lkd_build_kernel.sh $2 || exit 1
-    ln -sf /${PROJECT}/scripts/gdb/vmlinux-gdb.py vmlinux-gdb.py
-    ln -sf /${PROJECT}/lkd_scripts_gdb/lkd_gdb_load.py lkd_gdb_load.py
+    create_symlinks
     create_dotfiles
+  ;;
+  build-addons)
+    build_addons $2
   ;;
   clean-fs)
     log "case $1" 

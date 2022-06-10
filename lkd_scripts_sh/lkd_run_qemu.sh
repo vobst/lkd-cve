@@ -1,12 +1,33 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
-if [[ $# -eq 1 && $1 == "debug" ]]
+CMD="\
+-kernel $KERNEL/arch/x86_64/boot/bzImage \
+-drive file=$IMG,format=raw \
+--nographic \
+-m 4096 \
+-nic user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:2222-:22 \
+-smp 1"
+
+if [[ $# -eq 1 ]]
 then
-  DEBUG="-gdb tcp::1234";
+  case $1 in
+    debug)
+      log "case $1" 
+      CMD="$CMD -gdb tcp::1234 -append 'root=/dev/sda rw console=ttyS0 nokaslr'"
+    ;;
+    syzkaller)
+      log "case $1" 
+      CMD="$CMD -enable-kvm -pidfile vm.pid -append 'console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0'"
+    ;;
+    *)
+      log "received unknown option $1" 
+      exit 1
+    ;;
+  esac
 else
-    DEBUG=""
+  CMD="$CMD -append 'root=/dev/sda rw console=ttyS0 nokaslr'"
 fi
 
 if [[ -n "$(ss -ln | grep '^tcp.*:2222')" ]]
@@ -22,14 +43,7 @@ fi
 # qemu-system-x86_64 -kernel arch/x86_64/boot/bzImage -append "root=/dev/sda rw console=ttyS0 nokaslr" -drive file=./lkd_qemu_image.qcow2,format=raw --enable-kvm -cpu host --nographic -m 4096 -net nic,model=virtio -net user,hostfwd=tcp:127.0.0.1:2222-:22 -smp 1 $DEBUG |& tee lkd_vm.log
 
 # w/o KVM support
-qemu-system-x86_64 \
--kernel arch/x86_64/boot/bzImage \
--append "root=/dev/sda rw console=ttyS0 nokaslr" \
--drive file=./lkd_qemu_image.qcow2,format=raw \
---nographic -m 4096 \
--nic user,hostfwd=tcp:127.0.0.1:2222-:22 \
--smp 1 $DEBUG \
-|& tee lkd_vm.log
+qemu-system-x86_64 $CMD |& tee lkd_vm.log
 
 # reset the terminal
 reset

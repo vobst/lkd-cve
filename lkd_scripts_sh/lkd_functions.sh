@@ -20,11 +20,11 @@ function docker_build {
     -t lkd-$PROJECT . || exit 1
 }
 
-function wipe_kernel {
+function wipe_all_but_lkd {
   log "called $FUNCNAME" 
   ls -a | \
     grep -v -E "^(lkd_.*|README.md|LICENSE)\$" | \
-    grep -v -E "^(.|..|linux-$COMMIT.tar.gz|.git*|.docker*)\$" | \
+    grep -v -E "^(.|..|linux-$COMMIT.tar.gz|go${GOVERSION}.linux-amd64.tar.gz|.git*|.docker*)\$" | \
     xargs rm -rf
 }
 
@@ -36,6 +36,27 @@ function get_sources {
     get_go_sources
     get_syzkaller_sources
   fi
+}
+
+function get_syzkaller_sources {
+  log "called $FUNCNAME" 
+  git clone --depth 1 https://github.com/google/syzkaller syzkaller && \
+  rm -rf syzkaller/.git* || exit 1
+}
+
+function build_addons {
+  log "called $FUNCNAME" 
+  if [[ $# -eq 1 || $1 == "syzkaller" ]]
+  then
+    build_syzkaller
+  fi
+}
+
+function build_syzkaller {
+  log "called $FUNCNAME" 
+  cd $SYZKALLER && \
+  make $SYZKALLER_MAKE_CMD && \
+  cd $KERNEL || exit 1
 }
 
 function get_go_sources {
