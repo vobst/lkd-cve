@@ -34,7 +34,7 @@ export SCRIPTS=lkd_scripts_sh
 export EXAMPLES=lkd_examples
 export PATH_SSHD_CONF=$(pwd)/$FILES/lkd_sshd_config
 
-export GOVERSION="1.18.3"
+export GOVERSION="1.17.6"
 export GOROOT=$(pwd)/go
 export PATH="${PATH}:${GOROOT}/bin"
 
@@ -49,6 +49,19 @@ source $SCRIPTS/lkd_functions.sh
 log "---new run $PROJECT---"
 
 case $1 in
+  rebuild-syzkaller)
+    log "case $1" 
+    get_go_sources
+    get_syzkaller_sources
+    build_syzkaller
+    cp $EXAMPLES/$PROJECT/netfilter.txt \
+      $SYZKALLER/sys/linux/netfilter.txt && \
+    cd $SYZKALLER && \
+    ./bin/syz-extract -sourcedir /tmp/linux -build \
+      netfilter.txt && \
+    make $SYZKALLER_MAKE_CMD generate && \
+    build_syzkaller && cd $KERNEL || exit 1    
+  ;;
   cp-in)
     log "case $1" 
     scp -q $EXAMPLES/$PROJECT/* lkd_qemu:/root

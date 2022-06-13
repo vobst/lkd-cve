@@ -40,6 +40,7 @@ function get_sources {
 
 function get_syzkaller_sources {
   log "called $FUNCNAME" 
+  rm -rf syzkaller && \
   git clone --depth 1 https://github.com/google/syzkaller syzkaller && \
   rm -rf syzkaller/.git* || exit 1
 }
@@ -56,6 +57,7 @@ function build_syzkaller {
   log "called $FUNCNAME" 
   cd $SYZKALLER && \
   make $SYZKALLER_MAKE_CMD && \
+  make $SYZKALLER_MAKE_CMD bin/syz-extract && \
   cd $KERNEL || exit 1
 }
 
