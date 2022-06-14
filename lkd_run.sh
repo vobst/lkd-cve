@@ -1,7 +1,5 @@
 #!/usr/bin/bash
 
-set -ex
-
 # Variables you want to change
 # name of the kernel debugging project you are working on
 #export PROJECT=dirtypipe
@@ -46,9 +44,32 @@ export PATH="${PATH}:${SYZKALLER}/bin"
 
 source $SCRIPTS/lkd_functions.sh
 
-log "---new run $PROJECT---"
+log "---new run of $PROJECT---"
 
 case $1 in
+  install)
+    case $2 in
+      log "case $1" 
+      all)
+	maybe_install_docker
+	install_deps_syzkaller
+	install_deps_kernel
+      ;;
+      docker)
+	maybe_install_docker
+      ;;
+      deps_syzkaller)
+	[ -d "go" ] || get_go_sources
+	install_deps_syzkaller
+      ;;
+      deps_kernel)
+	install_deps_kernel
+      ;;
+      *)
+	print_usage
+      ;;
+    esac
+  ;;
   rebuild-syzkaller)
     log "case $1" 
     get_go_sources
@@ -56,7 +77,10 @@ case $1 in
     build_syzkaller
     cp $EXAMPLES/$PROJECT/netfilter.txt \
       $SYZKALLER/sys/linux/netfilter.txt && \
-    cd $SYZKALLER && \
+    cd $SYZKALLER || exit 1
+    [ -d "/tmp/linux" ] && log "Have /tmp/linux" || \
+      log "Need new /tmp/linux" && \
+      git clone --depth 1 https://github.com/torvalds/linux /tmp/linux
     ./bin/syz-extract -sourcedir /tmp/linux -build \
       netfilter.txt && \
     make $SYZKALLER_MAKE_CMD generate && \
@@ -70,17 +94,14 @@ case $1 in
     log "case $1" 
     create_dotfiles
   ;;
-  rebuild)
+  rebuild-kernel)
     log "case $1" 
     log "Hope you pushed your progress..." 
     wipe_all_but_lkd
-    get_sources $2
+    get_kernel_sources
     ./$SCRIPTS/lkd_build_kernel.sh $2 || exit 1
     create_symlinks
     create_dotfiles
-  ;;
-  build-addons)
-    build_addons $2
   ;;
   clean-fs)
     log "case $1" 
@@ -117,7 +138,7 @@ case $1 in
     log "case $1" 
     sudo true || exit 1
     docker_build
-    get_sources $2
+    get_kernel_sources
     ./$SCRIPTS/lkd_build_kernel.sh $2 && \
     sudo -E ./$SCRIPTS/lkd_create_root_fs.sh $2 || exit 1
     create_symlinks

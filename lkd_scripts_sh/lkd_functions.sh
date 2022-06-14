@@ -70,6 +70,7 @@ function get_go_sources {
     log "Fetching new go toolchain"
     wget https://dl.google.com/go/go${GOVERSION}.linux-amd64.tar.gz
   fi
+  rm -rf go/ && \
   tar xf go${GOVERSION}.linux-amd64.tar.gz || exit 1
 }
 
@@ -148,4 +149,89 @@ function docker_run {
       --hostname "lkd-$PROJECT-container" \
       --name lkd-$PROJECT-container \
       lkd-$PROJECT
+}
+
+function install_deps_syzkaller {
+  log "called $FUNCNAME" 
+  sudo apt-get update
+  sudo apt-get install -y -q \
+    libc6-dev-i386 \
+    linux-libc-dev \
+    gcc-aarch64-linux-gnu \
+    gcc-arm-linux-gnueabi \
+    gcc-powerpc64le-linux-gnu \
+    gcc-mips64el-linux-gnuabi64 || true
+  sudo apt-get install -y -q g++-aarch64-linux-gnu || true
+  sudo apt-get install -y -q g++-powerpc64le-linux-gnu || true
+  sudo apt-get install -y -q g++-arm-linux-gnueabi || true
+  sudo apt-get install -y -q g++-mips64el-linux-gnuabi64 || true
+  sudo apt-get install -y -q g++-s390x-linux-gnu || true
+  sudo apt-get install -y -q g++-riscv64-linux-gnu || true
+  sudo apt-get install -y -q g++ || true
+  [ -z "$(shell which python)" -a -n "$(shell which python3)" ] && \
+    sudo apt-get install -y -q python-is-python3 || true
+  sudo apt-get install -y -q clang-tidy || true
+  sudo apt-get install -y -q clang clang-format ragel
+  GO111MODULE=off go get -u golang.org/x/tools/cmd/goyacc
+}
+
+function install_deps_kernel {
+  log "called $FUNCNAME" 
+  sudo apt-get update && \
+  sudo apt-get install \
+    build-essential \
+    rsync \
+    git \
+    qemu-system-x86 \
+    debootstrap \
+    bc \
+    openssl \
+    libncurses-dev \
+    gawk \
+    flex \
+    bison \
+    libssl-dev \
+    dkms \
+    libelf-dev \
+    libudev-dev \
+    libpci-dev \
+    libiberty-dev \
+    autoconf || exit 1
+}
+
+function maybe_install_docker {
+  log "called $FUNCNAME" 
+  if docker version; then
+    log "Docker is already installed"
+  else
+    log "Installing docker"
+    install_deps_docker
+    install_docker
+  fi
+}
+
+function install_deps_docker {
+  log "called $FUNCNAME" 
+  sudo apt-get update && \
+  sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release || exit 1
+}
+
+function install_docker {
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+    sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+  sudo apt-get update && \
+  sudo apt-get install \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io \
+    docker-compose-plugin && \
+  sudo usermod -aG docker $USER && \
+  newgrp docker && \
+  sudo systemctl start docker || exit 1
 }
