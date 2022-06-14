@@ -1,7 +1,7 @@
 function log {
   if [[ $LOGGING_ON -ne 0 ]]
   then
-    echo "[ $0 ] $1" | tee -a ./lkd_log
+    echo "[ $0 ] $1" | tee -a $KERNEL/lkd_log
   else
     echo "[ $0 ] $1"
   fi
@@ -41,8 +41,7 @@ function get_sources {
 function get_syzkaller_sources {
   log "called $FUNCNAME" 
   rm -rf syzkaller && \
-  git clone --depth 1 https://github.com/google/syzkaller syzkaller && \
-  rm -rf syzkaller/.git* || exit 1
+  git clone --depth 1 https://github.com/google/syzkaller syzkaller || exit 1
 }
 
 function build_addons {

@@ -48,21 +48,25 @@ log "---new run of $PROJECT---"
 
 case $1 in
   install)
+    log "case $1" 
     case $2 in
-      log "case $1" 
       all)
+	log "case $2" 
 	maybe_install_docker
 	install_deps_syzkaller
 	install_deps_kernel
       ;;
       docker)
+	log "case $2" 
 	maybe_install_docker
       ;;
       deps_syzkaller)
+	log "case $2" 
 	[ -d "go" ] || get_go_sources
 	install_deps_syzkaller
       ;;
       deps_kernel)
+	log "case $2" 
 	install_deps_kernel
       ;;
       *)
@@ -73,14 +77,15 @@ case $1 in
   rebuild-syzkaller)
     log "case $1" 
     get_go_sources
+    GO111MODULE=off go get -u golang.org/x/tools/cmd/goyacc
     get_syzkaller_sources
     build_syzkaller
     cp $EXAMPLES/$PROJECT/netfilter.txt \
       $SYZKALLER/sys/linux/netfilter.txt && \
     cd $SYZKALLER || exit 1
     [ -d "/tmp/linux" ] && log "Have /tmp/linux" || \
-      log "Need new /tmp/linux" && \
-      git clone --depth 1 https://github.com/torvalds/linux /tmp/linux
+      ( log "Need new /tmp/linux" && \
+      git clone --depth 1 https://github.com/torvalds/linux /tmp/linux )
     ./bin/syz-extract -sourcedir /tmp/linux -build \
       netfilter.txt && \
     make $SYZKALLER_MAKE_CMD generate && \
