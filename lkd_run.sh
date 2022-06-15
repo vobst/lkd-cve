@@ -85,7 +85,7 @@ case $1 in
     cd $SYZKALLER || exit 1
     [ -d "/tmp/linux" ] && log "Have /tmp/linux" || \
       ( log "Need new /tmp/linux" && \
-      git clone --depth 1 https://github.com/torvalds/linux /tmp/linux )
+      git clone -4 --depth 1 https://github.com/torvalds/linux /tmp/linux )
     ./bin/syz-extract -sourcedir /tmp/linux -build \
       netfilter.txt && \
     make $SYZKALLER_MAKE_CMD generate && \

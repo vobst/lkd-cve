@@ -41,7 +41,7 @@ function get_sources {
 function get_syzkaller_sources {
   log "called $FUNCNAME" 
   rm -rf syzkaller && \
-  git clone --depth 1 https://github.com/google/syzkaller syzkaller || exit 1
+  git clone -4 --depth 1 https://github.com/google/syzkaller syzkaller || exit 1
 }
 
 function build_addons {
@@ -67,7 +67,7 @@ function get_go_sources {
     log "Reusing existing go toolchain"
   else
     log "Fetching new go toolchain"
-    wget https://dl.google.com/go/go${GOVERSION}.linux-amd64.tar.gz
+    wget -4 https://dl.google.com/go/go${GOVERSION}.linux-amd64.tar.gz
   fi
   rm -rf go/ && \
   tar xf go${GOVERSION}.linux-amd64.tar.gz || exit 1
@@ -80,7 +80,7 @@ function get_kernel_sources {
     log "Reusing existing kernel sources"
   else
     log "Fetching new kernel sources"
-    wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz
+    wget -4 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz
   fi
   tar xf linux-$COMMIT.tar.gz && \
   rsync -a linux-$COMMIT/ $(pwd)/  && \
@@ -220,7 +220,7 @@ function install_deps_docker {
 }
 
 function install_docker {
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+  curl -4 -fsSL https://download.docker.com/linux/ubuntu/gpg | \
     sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
