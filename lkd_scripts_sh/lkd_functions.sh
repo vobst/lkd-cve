@@ -89,6 +89,13 @@ function get_kernel_sources {
 
 function update_ssh-config {
   log "called $FUNCNAME" 
+  if [[ ! -f $PATH_SSH_KEY ]]
+  then
+    log "Generating new ssh keys"
+    ssh-keygen -f id_rsa -t rsa -N ''
+  else
+    log "Reusing existing ssh keys"
+  fi
   if [[ -z $(grep -E "^Host lkd_qemu$" ${PATH_SSH_CONF}) ]]
   then
     log "Updating ssh config"
