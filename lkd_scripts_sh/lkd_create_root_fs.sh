@@ -6,6 +6,8 @@ then
   exit 1
 fi
 
+source $SCRIPTS/lkd_functions.sh
+
 if [[ $# -eq 1 && $1 == "syzkaller" ]]
 then
   log "Building a root fs for syzkaller"
@@ -24,7 +26,6 @@ ROOT_PASSWD_HASH=$(openssl passwd -1 test)
 SEEK=5g
 DEBOOTSTRAP_PARAMS="--arch=$DEBARCH --include=$PKGS --components=main,contrib,non-free $RELEASE $DIR"
 
-source $SCRIPTS/lkd_functions.sh
 
 log "Cleanup and preparation"
 rm -rf $DIR && \
