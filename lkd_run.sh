@@ -154,7 +154,7 @@ case $1 in
   fuzz)
     log "case $1" 
     log "Config is: $(envsubst < $EXAMPLES/$PROJECT/syz_mngr_conf | sed -E "s/[ \t]+//g" | tr "\n" " ")"
-    cd $FUZZER_BASE && \
+    mkdir -p $FUZZER_BASE && cd $FUZZER_BASE && \
     $SYZKALLER/bin/syz-manager --config <(envsubst < $EXAMPLES/$PROJECT/syz_mngr_conf)
   ;;
   *)
