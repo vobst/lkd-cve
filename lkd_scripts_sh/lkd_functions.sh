@@ -87,12 +87,12 @@ function get_kernel_sources {
   rm -rf linux-$COMMIT/ || exit 1
 }
 
-function update_ssh-config {
+function update_ssh_config {
   log "called $FUNCNAME" 
   if [[ ! -f $PATH_SSH_KEY ]]
   then
     log "Generating new ssh keys"
-    ssh-keygen -f id_rsa -t rsa -N ''
+    ssh-keygen -f "$HOME/.ssh/id_rsa" -t rsa -N ''
   else
     log "Reusing existing ssh keys"
   fi
@@ -127,20 +127,31 @@ function create_dotfiles {
 
 function print_usage {
   log "called $FUNCNAME" 
-  echo -e "Options: \n\
+  echo -e "Options:\n\
+    install (all|docker|deps_syzkaller|deps_kernel)\n\
+      Installs the project's dependencies. Only for Debian/Ubuntu/Kali.\n\
+    rebuild-kernel [syzkaller]\n\
+      Rebuilds kernel from COMMIT. Optional parameters influence\n\
+      config, default is defconfig plus debug info.\n\
+    rebuild-syzkaller\n\
+      Rebuilds syzkaller to apply costum patches.\n\
     dotfiles:    re-creates dotfiles\n\
-    rebuild:     rebuilds kernel from COMMIT\n\
-    gdb:         launches gdb inside container\n\
     clean-fs:    wipes remnants of failed fs creation\n\
+    rootfs [syzkaller]\n\
+      Rebuilds rootfs. Defaults to rootfs for debugging.\n\
+    symlinks:    re-create symlinks to gdb scripts\n\
+    setup [syzkaller]\n\
+      Runs a full initial setup. Assumes that dependencies are\n\
+      installed. Defaults to debugging setup.
+    copy-in:     copy args to guest:root/\n\
+    copy-out:    copy args from guest:root/\n\
+    gdb:         launches gdb inside container\n\
     kill:        kills QEMU instance\n\
-    run [debug]: spins up QEMU instance [with gdbstub]\n\
+    run [debug|syzkaller]: spins up QEMU instance. Optionally with \n\
+      or gdbstub or for syzakller testing.\n\
     debug:       spins up container\n\
     docker:      re-builds container\n\
-    rootfs:      re-builds rootfs\n\
-    copy-in:     copy args to guest\n\
-    copy-out:    copy args from guest\n\
-    setup:       runs full initial setup\n\
-    symlinks:    re-create symlinks to gdb scripts"
+    fuzz:	 start syzkaller"
 }
 
 function docker_run {
@@ -184,7 +195,7 @@ function install_deps_syzkaller {
 function install_deps_kernel {
   log "called $FUNCNAME" 
   sudo apt-get update && \
-  sudo apt-get install \
+  sudo apt-get install -y -q \
     build-essential \
     rsync \
     git \
@@ -219,7 +230,7 @@ function maybe_install_docker {
 function install_deps_docker {
   log "called $FUNCNAME" 
   sudo apt-get update && \
-  sudo apt-get install \
+  sudo apt-get install -y -q \
     ca-certificates \
     curl \
     gnupg \
@@ -232,7 +243,7 @@ function install_docker {
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
   sudo apt-get update && \
-  sudo apt-get install \
+  sudo apt-get -y -q install \
     docker-ce \
     docker-ce-cli \
     containerd.io \
