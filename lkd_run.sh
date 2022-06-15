@@ -107,7 +107,7 @@ case $1 in
   ;;
   clean-fs)
     log "case $1" 
-    sudo umount $DIR && rmdir $DIR || exit 1
+    sudo umount /mnt/$DIR && sudo rmdir /mnt/$DIR || exit 1
   ;;
   rootfs)
     log "case $1" 
@@ -121,10 +121,10 @@ case $1 in
     sudo true || exit 1
     docker_build
     get_kernel_sources
+    update_ssh_config
     ./$SCRIPTS/lkd_build_kernel.sh $2 && \
     sudo -E ./$SCRIPTS/lkd_create_root_fs.sh $2 || exit 1
     create_symlinks
-    update_ssh-config
     create_dotfiles
   ;;
   cp-in)
