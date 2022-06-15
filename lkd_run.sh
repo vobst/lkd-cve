@@ -15,11 +15,11 @@ export COMMIT=d163a925ebbc6eb5b562b0f1d72c7e817aa75c40
 #export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
 
 # path/to/your/ssh_key
-export PATH_SSH_KEY=/home/kali/.ssh/id_rsa
+export PATH_SSH_KEY=${HOME}/.ssh/id_rsa
 # path/to/your/ssh_pubkey
-export PATH_SSH=/home/kali/.ssh/id_rsa.pub
+export PATH_SSH=${HOME}/.ssh/id_rsa.pub
 # path/to/your/ssh_config
-export PATH_SSH_CONF=/home/kali/.ssh/config
+export PATH_SSH_CONF=${HOME}/.ssh/config
 
 # save logs to file
 export LOGGING_ON=1
@@ -29,7 +29,7 @@ export IMG=lkd_qemu_image.qcow2
 export DIR=mount-point.dir
 export FILES=lkd_files
 export SCRIPTS=lkd_scripts_sh
-export EXAMPLES=lkd_examples
+export EXAMPLES=$(pwd)/lkd_examples
 export PATH_SSHD_CONF=$(pwd)/$FILES/lkd_sshd_config
 
 export GOVERSION="1.17.6"
@@ -39,6 +39,7 @@ export PATH="${PATH}:${GOROOT}/bin"
 export KERNEL=$(pwd)
 
 export SYZKALLER="$(pwd)/syzkaller"
+export FUZZER_BASE="/tmp/syzkaller"
 export SYZKALLER_MAKE_CMD="HOSTOS=linux HOSTARCH=amd64 TARGETOS=linux TARGETVMARCH=amd64 TARGETARCH=386"
 export PATH="${PATH}:${SYZKALLER}/bin"
 
@@ -74,6 +75,15 @@ case $1 in
       ;;
     esac
   ;;
+  rebuild-kernel)
+    log "case $1" 
+    log "Hope you pushed your progress..." 
+    wipe_all_but_lkd
+    get_kernel_sources
+    ./$SCRIPTS/lkd_build_kernel.sh $2 || exit 1
+    create_symlinks
+    create_dotfiles
+  ;;
   rebuild-syzkaller)
     log "case $1" 
     get_go_sources
@@ -91,26 +101,35 @@ case $1 in
     make $SYZKALLER_MAKE_CMD generate && \
     build_syzkaller && cd $KERNEL || exit 1    
   ;;
-  cp-in)
-    log "case $1" 
-    scp -q $EXAMPLES/$PROJECT/* lkd_qemu:/root
-  ;;
   dotfiles)
     log "case $1" 
-    create_dotfiles
-  ;;
-  rebuild-kernel)
-    log "case $1" 
-    log "Hope you pushed your progress..." 
-    wipe_all_but_lkd
-    get_kernel_sources
-    ./$SCRIPTS/lkd_build_kernel.sh $2 || exit 1
-    create_symlinks
     create_dotfiles
   ;;
   clean-fs)
     log "case $1" 
     sudo umount $DIR && rmdir $DIR || exit 1
+  ;;
+  rootfs)
+    log "case $1" 
+    sudo -E ./$SCRIPTS/lkd_create_root_fs.sh $2 || exit 1
+  ;;
+  symlinks)
+    create_symlinks
+  ;;
+  setup)
+    log "case $1" 
+    sudo true || exit 1
+    docker_build
+    get_kernel_sources
+    ./$SCRIPTS/lkd_build_kernel.sh $2 && \
+    sudo -E ./$SCRIPTS/lkd_create_root_fs.sh $2 || exit 1
+    create_symlinks
+    update_ssh-config
+    create_dotfiles
+  ;;
+  cp-in)
+    log "case $1" 
+    scp -q $EXAMPLES/$PROJECT/* lkd_qemu:/root
   ;;
   gdb)
     log "case $1" 
@@ -132,23 +151,11 @@ case $1 in
     log "case $1" 
     docker_build
   ;;
-  rootfs)
+  fuzz)
     log "case $1" 
-    sudo -E ./$SCRIPTS/lkd_create_root_fs.sh $2 || exit 1
-  ;;
-  symlinks)
-    create_symlinks
-  ;;
-  setup)
-    log "case $1" 
-    sudo true || exit 1
-    docker_build
-    get_kernel_sources
-    ./$SCRIPTS/lkd_build_kernel.sh $2 && \
-    sudo -E ./$SCRIPTS/lkd_create_root_fs.sh $2 || exit 1
-    create_symlinks
-    update_ssh-config
-    create_dotfiles
+    log "Config is: $(envsubst < $EXAMPLES/$PROJECT/syz_mngr_conf | sed -E "s/[ \t]+//g" | tr "\n" " ")"
+    cd $FUZZER_BASE && \
+    $SYZKALLER/bin/syz-manager --config <(envsubst < $EXAMPLES/$PROJECT/syz_mngr_conf)
   ;;
   *)
     print_usage
