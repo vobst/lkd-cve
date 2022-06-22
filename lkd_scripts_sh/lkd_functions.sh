@@ -148,8 +148,8 @@ function print_usage {
     copy-out:    copy args from guest:root/\n\
     gdb:         launches gdb inside container\n\
     kill:        kills QEMU instance\n\
-    run [debug|syzkaller]: spins up QEMU instance. Optionally with \n\
-      or gdbstub or for syzakller testing.\n\
+    run [debug|eBPF|syzkaller]: spins up QEMU instance. Optionally with \n\
+      or gdbstub, eBPF testing, or for syzakller testing.\n\
     debug:       spins up container\n\
     docker:      re-builds container\n\
     fuzz:	 start syzkaller"

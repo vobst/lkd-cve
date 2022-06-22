@@ -22,6 +22,10 @@ then
       log "case $1" 
       CMD="$CMD -gdb tcp::1234"
     ;;
+    eBPF)
+      log "case $1"
+      KCMD="$KCMD lsm=bpf"
+    ;;
     syzkaller)
       log "case $1" 
       CMD="$CMD -pidfile vm.pid"

@@ -19,7 +19,7 @@ then
   log "Building a root fs for playing with eBPF"
   PKGS="strace,bpfcc-tools,bpfcc-introspection,python3-bpfcc,libbpfcc,libbpfcc-dev,bpftrace,bpftool"
   DEBARCH=amd64
-  RELEASE=bullseye
+  RELEASE=bookworm
 else
   log "Building a normal rootfs"
   DEBARCH=amd64
