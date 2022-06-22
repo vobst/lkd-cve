@@ -137,10 +137,10 @@ function print_usage {
       Rebuilds syzkaller to apply costum patches.\n\
     dotfiles:    re-creates dotfiles\n\
     clean-fs:    wipes remnants of failed fs creation\n\
-    rootfs [syzkaller]\n\
+    rootfs [syzkaller|eBPF]\n\
       Rebuilds rootfs. Defaults to rootfs for debugging.\n\
     symlinks:    re-create symlinks to gdb scripts\n\
-    setup [syzkaller]\n\
+    setup [syzkaller|eBPF]\n\
       Runs a full initial setup. Assumes that dependencies are\n\
       installed. Defaults to debugging setup.
     copy-in:     copy args to guest:root/\n\

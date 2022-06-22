@@ -14,13 +14,18 @@ then
   PKGS='openssh-server,curl,tar,gcc,libc6-dev,time,strace,sudo,less,psmisc,selinux-utils,policycoreutils,checkpolicy,selinux-policy-default,firmware-atheros,debian-ports-archive-keyring,make,sysbench,git,vim,tmux,usbutils,tcpdump'
   DEBARCH=i386
   RELEASE=stretch
+elif [[ $# -eq 1 && $1 == "eBPF" ]]
+  log "Building a root fs for playing with eBPF"
+  PKGS="strace,bpfcc-tools,python-bpfcc,libbpfcc,libbpfcc-dev,bpftrace"
+  DEBARCH=amd64
+  RELEASE=bullseye
 else
   log "Building a normal rootfs"
-  PKGS=build-essential,gcc-multilib,vim,openssh-server,make,sudo,nftables,iptables
   DEBARCH=amd64
   RELEASE=bullseye
 fi
 
+PKGS="$PKGS,build-essential,gcc-multilib,vim,git,openssh-server,make,sudo"
 DIR=/mnt/$DIR
 ROOT_PASSWD_HASH=$(openssl passwd -1 test) 
 SEEK=5g

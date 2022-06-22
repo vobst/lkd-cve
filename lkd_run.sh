@@ -3,14 +3,17 @@
 # Variables you want to change
 # name of the kernel debugging project you are working on
 #export PROJECT=dirtypipe
-export PROJECT=cve-2021-22555
+#export PROJECT=cve-2021-22555
 #export PROJECT=devel
+export PROJECT=eBPF
 
 # the commit you want to build
+# mainline kernel
+export COMMIT=$(git ls-remote --heads https://github.com/torvalds/linux | grep -oE "[0-9a-f]{4}+")
 # dirtypipe
 # export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
 # CVE-2021-22555
-export COMMIT=d163a925ebbc6eb5b562b0f1d72c7e817aa75c40
+# export COMMIT=d163a925ebbc6eb5b562b0f1d72c7e817aa75c40
 # devel 
 #export COMMIT=e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
 
