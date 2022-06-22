@@ -15,8 +15,9 @@ then
   DEBARCH=i386
   RELEASE=stretch
 elif [[ $# -eq 1 && $1 == "eBPF" ]]
+then
   log "Building a root fs for playing with eBPF"
-  PKGS="strace,bpfcc-tools,python-bpfcc,libbpfcc,libbpfcc-dev,bpftrace"
+  PKGS="strace,bpfcc-tools,bpfcc-introspection,python3-bpfcc,libbpfcc,libbpfcc-dev,bpftrace"
   DEBARCH=amd64
   RELEASE=bullseye
 else
@@ -25,7 +26,7 @@ else
   RELEASE=bullseye
 fi
 
-PKGS="$PKGS,build-essential,gcc-multilib,vim,git,openssh-server,make,sudo"
+PKGS="$PKGS,build-essential,gcc-multilib,vim,git,openssh-server,make,sudo,ca-certificates"
 DIR=/mnt/$DIR
 ROOT_PASSWD_HASH=$(openssl passwd -1 test) 
 SEEK=5g

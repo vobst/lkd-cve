@@ -74,13 +74,14 @@ function get_go_sources {
 }
 
 function get_kernel_sources {
-  log "called $FUNCNAME" 
+  log "called $FUNCNAME"
+  log "COMMIT=$COMMIT"
   if [[ -f linux-$COMMIT.tar.gz ]]
   then
     log "Reusing existing kernel sources"
   else
     log "Fetching new kernel sources"
-    wget -4 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz
+    wget -4 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-$COMMIT.tar.gz || exit 1
   fi
   tar xf linux-$COMMIT.tar.gz && \
   rsync -a linux-$COMMIT/ $(pwd)/  && \

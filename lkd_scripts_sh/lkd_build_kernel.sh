@@ -18,6 +18,12 @@ else
   log "Using generic .config"
   make x86_64_defconfig && \
   ./scripts/config \
+      -e BPF_EVENTS \
+      -e BPF_JIT \
+      -e BPF_SYSCALL \
+      -e FTRACE_SYSCALLS \
+      -e FUNCTION_TRACER \
+      -e DYNAMIC_FTRACE \
       -e DEBUG_KERNEL \
       -e DEBUG_INFO \
       -e DEBUG_INFO_DWARF4 \
