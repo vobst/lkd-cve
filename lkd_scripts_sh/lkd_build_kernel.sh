@@ -18,8 +18,18 @@ else
   log "Using generic .config"
   make x86_64_defconfig && \
   ./scripts/config \
+      -m NET_CLS_BPF \
+      -m NET_ACT_BPF \
+      -m NET_SCH_SFQ \
+      -m NET_ACT_POLICE \
+      -m NET_ACT_GACT \
+      -m DUMMY \
+      -m VXLAN \
+      -e IKHEADERS \
+      -e BPF \
       -e BPF_EVENTS \
       -e BPF_JIT \
+      -e HAVE_EBPF_JIT \
       -e BPF_SYSCALL \
       -e FTRACE_SYSCALLS \
       -e FUNCTION_TRACER \
