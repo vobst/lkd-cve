@@ -6,16 +6,15 @@ BEGIN
   @buf_flags["MERGE_FLAG"] = 16;
 }
 
-kfunc:pipe_write
+kprobe:pipe_write
 {
-  $pipe = *((struct pipe_inode_info *)args->iocb->ki_filp->private_data);
+  $pipe = *((struct pipe_inode_info *)((struct kiocb *)arg0)->ki_filp->private_data);
   $mask = $pipe.ring_size - 1;
-  $head = $pipe.head & $mask;
+  $head = ($pipe.head-1) & $mask;
   $headbuf = $pipe.bufs + $head;
   $cache_ops = kaddr("page_cache_pipe_buf_ops");
   if ($headbuf->flags & @buf_flags["MERGE_FLAG"] && $headbuf->ops == $cache_ops) {
     printf("!!11!!! ALARM H4X0rs do evil stuff\n");
-    signal("SIGKILL");
   }
 }
 

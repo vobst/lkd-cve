@@ -1,0 +1,119 @@
+digraph "DOT graph for eBPF program" {
+subgraph "cluster_0" {
+	style="dashed";
+	color="black";
+	label="func_0 ()";
+	fn_0_bb_0 [shape=Mdiamond,style=filled,label="ENTRY"];
+
+	fn_0_bb_2 [shape=record,style=filled,label="{   0: (79) r2 = *(u64 *)(r1 +8)\l\
+ |    1: (79) r6 = *(u64 *)(r1 +0)\l\
+ |    2: (b7) r0 = 0\l\
+ |    3: (7b) *(u64 *)(r10 -8) = r0\l\
+ |    4: (7b) *(u64 *)(r10 -16) = r0\l\
+ |    5: (7b) *(u64 *)(r10 -24) = r0\l\
+ |    6: (7b) *(u64 *)(r10 -32) = r0\l\
+ |    7: (7b) *(u64 *)(r10 -40) = r0\l\
+ |    8: (79) r1 = *(u64 *)(r6 +40)\l\
+ |    9: (55) if r1 != 0x825c83a0 goto pc+69\l\
+}"];
+
+	fn_0_bb_3 [shape=record,style=filled,label="{  10: (67) r2 \<\<= 32\l\
+ |   11: (77) r2 \>\>= 32\l\
+ |   12: (15) if r2 == 0x4 goto pc+66\l\
+}"];
+
+	fn_0_bb_4 [shape=record,style=filled,label="{  13: (85) call bpf_get_current_pid_tgid#158096\l\
+ |   14: (63) *(u32 *)(r10 -40) = r0\l\
+ |   15: (85) call bpf_ktime_get_ns#158352\l\
+ |   16: (7b) *(u64 *)(r10 -32) = r0\l\
+ |   17: (bf) r1 = r10\l\
+ |   18: (07) r1 += -23\l\
+ |   19: (b7) r2 = 16\l\
+ |   20: (85) call bpf_get_current_comm#158496\l\
+ |   21: (b7) r1 = 0\l\
+ |   22: (73) *(u8 *)(r10 -24) = r1\l\
+ |   23: (79) r6 = *(u64 *)(r6 +200)\l\
+ |   24: (bf) r1 = r10\l\
+ |   25: (07) r1 += -72\l\
+ |   26: (bf) r3 = r6\l\
+ |   27: (07) r3 += 92\l\
+ |   28: (b7) r2 = 4\l\
+ |   29: (85) call bpf_probe_read_kernel#-62144\l\
+ |   30: (bf) r1 = r10\l\
+ |   31: (07) r1 += -68\l\
+ |   32: (bf) r3 = r6\l\
+ |   33: (07) r3 += 80\l\
+ |   34: (b7) r2 = 4\l\
+ |   35: (85) call bpf_probe_read_kernel#-62144\l\
+ |   36: (61) r7 = *(u32 *)(r10 -72)\l\
+ |   37: (07) r6 += 152\l\
+ |   38: (bf) r1 = r10\l\
+ |   39: (07) r1 += -48\l\
+ |   40: (b7) r2 = 8\l\
+ |   41: (bf) r3 = r6\l\
+ |   42: (85) call bpf_probe_read_kernel#-62144\l\
+ |   43: (07) r7 += -1\l\
+ |   44: (61) r1 = *(u32 *)(r10 -68)\l\
+ |   45: (07) r1 += -1\l\
+ |   46: (5f) r1 \&= r7\l\
+ |   47: (67) r1 \<\<= 32\l\
+ |   48: (77) r1 \>\>= 32\l\
+ |   49: (27) r1 *= 40\l\
+ |   50: (79) r3 = *(u64 *)(r10 -48)\l\
+ |   51: (0f) r3 += r1\l\
+ |   52: (7b) *(u64 *)(r10 -48) = r3\l\
+ |   53: (07) r3 += 24\l\
+ |   54: (bf) r1 = r10\l\
+ |   55: (07) r1 += -64\l\
+ |   56: (b7) r2 = 8\l\
+ |   57: (85) call bpf_probe_read_kernel#-62144\l\
+ |   58: (79) r3 = *(u64 *)(r10 -48)\l\
+ |   59: (07) r3 += 16\l\
+ |   60: (bf) r1 = r10\l\
+ |   61: (07) r1 += -56\l\
+ |   62: (b7) r2 = 8\l\
+ |   63: (85) call bpf_probe_read_kernel#-62144\l\
+ |   64: (79) r1 = *(u64 *)(r10 -64)\l\
+ |   65: (57) r1 \&= 16\l\
+ |   66: (15) if r1 == 0x0 goto pc+11\l\
+}"];
+
+	fn_0_bb_5 [shape=record,style=filled,label="{  67: (79) r1 = *(u64 *)(r10 -56)\l\
+ |   68: (55) if r1 != 0x825c9920 goto pc+9\l\
+}"];
+
+	fn_0_bb_6 [shape=record,style=filled,label="{  69: (b7) r1 = 1\l\
+ |   70: (73) *(u8 *)(r10 -24) = r1\l\
+ |   71: (18) r1 = map[id:14]\l\
+ |   72: BUG_ld_00\l\
+ |   73: (bf) r2 = r10\l\
+ |   74: (07) r2 += -40\l\
+ |   75: (b7) r3 = 40\l\
+ |   76: (b7) r4 = 0\l\
+ |   77: (85) call bpf_ringbuf_output#210336\l\
+}"];
+
+	fn_0_bb_7 [shape=record,style=filled,label="{  78: (71) r0 = *(u8 *)(r10 -24)\l\
+}"];
+
+	fn_0_bb_8 [shape=record,style=filled,label="{  79: (95) exit\l\
+}"];
+
+	fn_0_bb_1 [shape=Mdiamond,style=filled,label="EXIT"];
+
+	fn_0_bb_0:s -> fn_0_bb_2:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_2:s -> fn_0_bb_3:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_2:s -> fn_0_bb_8:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_3:s -> fn_0_bb_4:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_3:s -> fn_0_bb_8:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_4:s -> fn_0_bb_5:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_4:s -> fn_0_bb_7:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_5:s -> fn_0_bb_6:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_5:s -> fn_0_bb_7:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_6:s -> fn_0_bb_7:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_6:s -> fn_0_bb_7:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_7:s -> fn_0_bb_8:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_8:s -> fn_0_bb_1:n [style="solid,bold", color=black, weight=10, constraint=true];
+	fn_0_bb_0:s -> fn_0_bb_1:n [style="invis", constraint=true];
+}
+}

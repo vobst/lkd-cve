@@ -17,7 +17,7 @@ then
 elif [[ $# -eq 1 && $1 == "eBPF" ]]
 then
   log "Building a root fs for playing with eBPF"
-  PKGS="strace,bpfcc-tools,bpfcc-introspection,python3-bpfcc,libbpfcc,libbpfcc-dev,bpftrace,bpftool"
+  PKGS="strace,bpfcc-tools,bpfcc-introspection,python3-bpfcc,libbpfcc,libbpfcc-dev,bpftrace,bpftool,libbfd-dev"
   DEBARCH=amd64
   RELEASE=bookworm
 else

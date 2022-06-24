@@ -24,6 +24,7 @@ then
     ;;
     eBPF)
       log "case $1"
+      SMP="-smp 2"
       KCMD="$KCMD lsm=bpf"
     ;;
     syzkaller)

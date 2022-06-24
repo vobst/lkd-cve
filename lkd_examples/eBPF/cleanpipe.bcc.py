@@ -38,7 +38,7 @@ def main():
     b['buffer'].open_ring_buffer(callback)
 
     print("LSM hook file_permission on pipe write attempts, ctrl-C to exit.")
-    print("%-16s %10s %10s %10s" % ("COMM", "PID", "TIME", "EXPLOIT???"))
+    print("%-16s %10s %10s %10s" % ("COMM", "PID", "TIME", "EVIL BIT"))
 
     try:
         while 1:

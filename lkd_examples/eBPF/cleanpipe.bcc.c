@@ -38,7 +38,7 @@ LSM_PROBE(file_permission, struct file *file, int mask)
   pipe_mask = ring_size - 1;
 
   bpf_probe_read_kernel(&buf, sizeof(u64), &pipe->bufs);
-  buf = buf + (head & pipe_mask);
+  buf = buf + ((head-1) & pipe_mask);
 
   bpf_probe_read_kernel(&flags, sizeof(u64), &buf->flags);
   bpf_probe_read_kernel(&ops, sizeof(u64), &buf->ops);
@@ -46,9 +46,8 @@ LSM_PROBE(file_permission, struct file *file, int mask)
   if (flags & PIPE_BUF_FLAG_CAN_MERGE && ops == (struct pipe_buf_operations *)PAGE_CACHE_PIPE_BUF_OPS)
   { 
     data.ok = 1;
+    buffer.ringbuf_output(&data, sizeof(data), 0);
   }
-
-  buffer.ringbuf_output(&data, sizeof(data), 0);
 
   return data.ok;
 }
