@@ -17,9 +17,10 @@ then
 elif [[ $# -eq 1 && $1 == "eBPF" ]]
 then
   log "Building a root fs for playing with eBPF"
-  PKGS="strace,bpfcc-tools,bpfcc-introspection,python3-bpfcc,libbpfcc,libbpfcc-dev,bpftrace,bpftool,libbfd-dev"
+  PKGS="strace,bpfcc-tools,bpfcc-introspection,python3-bpfcc,libbpfcc,libbpfcc-dev,bpftrace,bpftool,libbfd-dev,clang,libelf,zlib"
   DEBARCH=amd64
   RELEASE=bookworm
+  GIT_CLONE="libbpf/libbpf-bootstrap iovisor/bcc iovisor/bpftrace"
 else
   log "Building a normal rootfs"
   DEBARCH=amd64
@@ -46,16 +47,27 @@ mount -o loop $IMG $DIR || exit 1
 log "Begin bootstrapping"
 debootstrap $DEBOOTSTRAP_PARAMS || exit 1
 
-log "Begin common fs modifications"
+log "Begin common root fs modifications"
+log "Install kernel modules"
 INSTALL_MOD_PATH="$DIR" make modules_install && \
+log "System customizations"
 sed -i -e "s#root:\*#root:${ROOT_PASSWD_HASH}#" $DIR/etc/shadow && \
 echo "lkd-debian-qemu" > $DIR/etc/hostname && \
 echo "127.0.0.1       lkd-debian-qemu" >> $DIR/etc/hosts && \
 echo '/dev/root / ext4 defaults 0 0' >> $DIR/etc/fstab && \
 echo "nameserver 8.8.8.8" >> $DIR/etc/resolve.conf && \
+echo -e "auto enp0s3\niface enp0s3 inet dhcp" >> $DIR/etc/network/interfaces && \
+log "Setup ssh"
 mkdir $DIR/root/.ssh && \
 cat $PATH_SSH > $DIR/root/.ssh/authorized_keys && \
 cp $PATH_SSHD_CONF $DIR/etc/ssh/ || exit 1
+log "Clone git repos"
+for repo in $GIT_CLONE;
+do
+  REPO=$repo
+  log "cloning $REPO"
+  git clone https://github.com/$REPO $DIR/root/$REPO || exit 1
+done
 
 if [[ $# -eq 1 && $1 == "syzkaller" ]]
 then
@@ -66,9 +78,11 @@ then
   echo 'securityfs /sys/kernel/security securityfs defaults 0 0' >> $DIR/etc/fstab && \
   echo 'configfs /sys/kernel/config/ configfs defaults 0 0' >> $DIR/etc/fstab && \
   echo 'binfmt_misc /proc/sys/fs/binfmt_misc binfmt_misc defaults 0 0' >> $DIR/etc/fstab || exit 1
+elif [[ $# -eq 1 && $1 == "eBPF" ]]
+then
+  log "Modifying the root fs for eBPF"
 else
-  log "Doing normal root fs modification"
-  echo -e "auto enp0s3\niface enp0s3 inet dhcp" >> $DIR/etc/network/interfaces || exit 1
+  log "No further root fs modifications required"
 fi
 
 log "Begin teardown"
